@@ -1,0 +1,13 @@
+
+
+Install gitflow:
+	https://github.com/nvie/gitflow/wiki/Installation
+	https://github.com/nvie/gitflow/wiki/Linux
+
+		$ apt-get install git-flow
+
+Iniciar projeto gitflow
+
+	$ git flow init
+
+	

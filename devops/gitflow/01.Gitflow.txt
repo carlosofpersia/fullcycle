@@ -1,6 +1,6 @@
 
 
-***** GITFLOW *****
+***** GITFLOW - WORKFLOW *****
 
 Processo que visa utilizar o git como ferramenta para gerenciar a criação de novas features, correções de bugs e releases.
 
