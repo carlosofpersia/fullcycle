@@ -1,0 +1,99 @@
+
+****** Introdução a Arquitetura *******
+
+
+Aula 01
+
+* Arquitetura de Sistemas
+
+	Organização de um sistema, contemplando seus componentes, ou relacionamentos entre estes e com o ambiente, e os princípios que governam seu projeto e evolução.
+
+Pilares
+	Organização de um sistema;
+	Componentização: os processos para funcionar de forma mais eficiente, e de forma distribuida;
+	Relacionamentos: entre sistemas (Diretas ou Indiretas);
+	Governança: Documentar o processo, definir o Time, a Infraestrutura, a Arquitetura em Si;
+	Ambiente: Definição, Padronização de ambientes (Ambientes de Deploy, de Testes, de Soluções, Produção, DEV, Teste);
+	Projeto: Definições + Limitado (Inicio, meio e fim);
+	Projeção: Futuro. Próximas opções de integrações engatilhadas...;
+	Cultura: Time novo, Perfis de profissionais... (Problema: Processo de definição).
+
+Framework
+
+	Ferramentas e métodos que nos ajudam a focar no objetivo final, ajudam a definir um padrão de trabalho. (TOGAF e ISO)
+
+	TOGAF Standard: 
+		Framework conceitual;
+		nos ajudam nas definições do processo de arquitetura;
+		Manual tem + de 900 páginas, bem completo para ser um bom arquiteto;
+		Conceitos e nomenclaturas;
+		Visão geral de tipos de arquiteturas;
+			Negócio;
+			Sistemas de Informação;
+			Tecnologia;
+			Planos de migração.
+
+	ISO/iec/ieee 42010:2011. Systems and software engineering - Architecture description
+		Lançada em 2011 pela ISO;
+		Mais simplificado em relação as 900 páginas do TOGAF;
+		Formaliza os fundamentos da área de arquitetura de software;
+
+Aula 02
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGILE
+
+* On-PREMISE
+	É quando os servidores estão fisicamente localizados nas instalações das empresas.
+
+* Escalas
+
+Escala Vertical
+Aumentar recursos computacionais (mais memória + mais hd + mais processador )
+
+Escala Horizontal -> 
+	Adiciona mais máquinas. Loud Balancer -> usuairo 1 maquina 1, usuario 2 maquina 2....
+	Adicionar mais recursos ao mesmo node
+
+* Detalhes sobre a arquitetura da aplicação
+Discos efemeros: a informação é temporária, se a maquina é destruida, perde a informação;
+Servidor de aplicação VS Servidor de assets (objetos estáticos);
+Cache centralizado;
+Sessões centralizadas;
+Upload/Gravação de arquivos;
+* tudo que é facilmente destruido é facilmente construido;
+
+
+App
+proxy reverso
+Elastic
+Static
+Cache
+DB
+
+* Problema em sistemas monoliticos:
+	Times Grandes para um unico software;
+	Necessidade de escalar todo o sistema pq uma unica area esta entrando em pico de utilização dos recursos;
+	Risco de deploy (deploys perigosos) derrubar o sistema inteiro;
+	Necessidade de utilizar tecnologias diferentes;
+
+
+
+
+
+
+
+
+
