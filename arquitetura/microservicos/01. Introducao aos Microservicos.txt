@@ -34,7 +34,7 @@ Microserviços
 	Comunicação sincrona ou assincrona; 
 	Microserviços trabalha com FILAS - As filas armazenam as mensagens aguardando o microservios;
 
-Microservios - Não são para todas as situações, não é moda é necessidade
+Microserviços - Não são para todas as situações, não é moda é necessidade
 	Arquitetura +complexa;
 	Custo mais elevado;
 	Necessidade de mais equipes para manter;
@@ -42,20 +42,18 @@ Microservios - Não são para todas as situações, não é moda é necessidade
 	Gera problemas que normalmente você não tinha antes;
 	Monitoramento complexo.
 
-Aula 02
 
+-------------------------------------------------------------------------------------
 
-
-
-
+Aula 02 e 03
 
 * Microservios - Características (Martin Fowler):
 	9 Características/Categorias por Martin Fowler:
 
 		1. Componentização via serviços;
 
-			Serviços dos microservios != Services da OO;
-			Componente é uma unidade de software independente que pode ser substituida ou atualizada;
+			Services dos microserviços != Services da Orientação a Objetos;
+			Componente é uma unidade de software independente, que pode ser substituida ou atualizada;
 			Desvantagens: 
 				Chamadas externas são mais custosas do que chamadas locais;
 				Cruzamento entre componentes pode se tornar complexo;
@@ -71,6 +69,11 @@ Aula 02
 				Cada squads é multidisciplinar;
 				Cada squad é resonsável por um ou mais produtos;
 			Cada produto pode ter um ou mais serviços envolvidos;
+
+
+						----------------
+							Aula 03
+						----------------
 
 		3. Estrutura baseada em Produtos. Não em projetos;
 
@@ -102,6 +105,13 @@ Aula 02
 			Gerenciamento de versões;
 			Replacement and upgradeability;
 
+
+-----------------------------------------------------------------------------
+
+	Aula 4
+
+
+
 * Conceios e padrões para comunicação entre microservios
 
 	* API GATEWAYs
@@ -124,3 +134,10 @@ Aula 02
 			Consul; 
 			Etcd;
 			
+
+--------------------------------------------------------------------------------------
+
+
+Referências:
+
+	https://martinfowler.com/articles/microservices.html

@@ -38,8 +38,49 @@ Framework
 		Mais simplificado em relação as 900 páginas do TOGAF;
 		Formaliza os fundamentos da área de arquitetura de software;
 
+------------------------------------------------------------------------------------------
+
 Aula 02
 
+História da arquitetura
+	
+	* Tradicional
+		Metodologia de desenvolvimento: Waterfall (Cachoeira, processos acoplados)
+			Software Development LIFE Cycle -> 
+				1. Requirements Analysis;
+				2. Design;
+				3. Development;
+				4. Testing;
+				5. Maintenance.
+			Monolítica
+				Unico sistema que compõe todas as funcionalidades da aplicação;
+			Infraestrutura ON-PREMISE
+				É quando os servidores/datacenters estão fisicamente localizados nas instalações das empresas.
+
+	* Atual
+		Metodologia de desenvolvimento: AGILE;
+		Tipo de Aplicações: Multi-tier architecture;
+			Softwares distribuidos.
+		Infraestrutura: Virtualização.
+
+	* Emergente
+		Metodologia de desenvolvimento: DevOps / FullCycle;
+			Operação + Desenvolvimento -> Automatizados, Simples.
+		Tipo de Aplicações: Microserviços (serviços menores e independentes);
+		Infraestrutura: Containers.
+
+	* Futuro
+		Metodologia de desenvolvimento: NoOps
+			Não precisaremos mais nos preocupar com os Processos inteiros, as aplicações ficarão nas Nuvens.
+		Tipo de Aplicações: Serverless Applications; Paga ON-Demand pelo acesso as funções.
+		Infraestrutura: Public Cloud.
+
+------------------------------------------------------------------------------------------
+
+	Aula 03
+
+
+	
 
 
 
@@ -50,13 +91,6 @@ Aula 02
 
 
 
-
-
-
-AGILE
-
-* On-PREMISE
-	É quando os servidores estão fisicamente localizados nas instalações das empresas.
 
 * Escalas
 
