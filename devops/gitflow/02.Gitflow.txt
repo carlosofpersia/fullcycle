@@ -1,5 +1,10 @@
 
 
+-----------------
+Aula 02 - Gitflow na prática
+----------------
+
+
 Install gitflow:
 	https://github.com/nvie/gitflow/wiki/Installation
 	https://github.com/nvie/gitflow/wiki/Linux
@@ -132,11 +137,11 @@ gitflow.prefix.support=support/
 gitflow.prefix.versiontag=
 gitflow.path.hooks=/home/carloss/Documents/Desenvolvimento/fullcycle-projetos/.git/hooks
 
-
 -------------------------------------------------------------------------------------------------------------
 
-
-Aula 2 - PULL request github.
+-----------------
+Aula 3 - Gitflow e Pull Requests.
+-----------------
 
 $ git remote add origin https://github.com/carlosofpersia/fullcycle-projetos-gitflow
 $ git push -u origin master
@@ -153,9 +158,6 @@ $ git push -u origin develop --tags
 		$ git pull origin develop
 		$ git branch
 	$ git branch -D feature/esqueceu_senha_2
-
-
-
 
 
 	//Abordagem 2 do proceso de push para o github.
@@ -195,14 +197,52 @@ $ git push -u origin develop --tags
 	$ git push origin develop
 		Nesse caso não precisarei fazer o pull request direto do git. ele faz daqui!
 
+-------------------------------------------------------------------------------------------------------------
 
 
 
+-----------------
+Aula 4 - Trabalhando com Releases.
+-----------------
 
 
+	//Abordagem 1 - Com git flow finish
 
 
+$ git flow release start 0.2.0
+$ git push origin release/0.2.0
+	resolvo o merge da release nesse caso direto para o master, pois vai para produção (release)
+	Não posso deletar a branch lá no github, senão não conseguirei realizar o git flow release finish ...
 
+$ git flow release finish '0.2.0'
+
+$ git branch
+$ git checkout master
+$ git pull origin master
+$ git checkout develop
+$ git merge master
+$ git log
+
+$ git push origin develop  --tags
+
+
+//Abordagem 2 - sem git flow finish
+Mando alguma coisa para o develop.
+
+$ git flow release start 0.2.1
+$ git push origin release/0.2.1
+$ git checkout master
+$ git branch
+$ git pull origin master
+$ git branch
+$ git branch -D release/0.2.1
+$ git tag
+$ git push origin master --tags
+
+
+$ git checkout develop
+$ git merge master
+	Sem alterações, tudo ok.
 
 -------------------------------------------------------------------------------------------------------------
 

@@ -1,0 +1,37 @@
+
+Baixar nginx
+https://hub.docker.com/_/nginx
+
+Conferir se está tudo ok.
+$ sudo docker ps -a
+$ sudo docker images -a
+
+
+$ sudo docker run nginx:latest
+	Já instala e roda
+$ Ctrl C - para parar de rodar o nginx
+	Verificar as tags, as vezes tem alguma especificidade na minha aplicação.
+	$ sudo docker pull nginx (não usamos ainda até aqui.)
+
+01 Expor uma porta do nosso computador
+
+02 Colocar o nome no containers
+
+03 Rodar o container em background
+	$ sudo docker run -d nginx
+		Rodando com -d o processo roda em background
+
+	$ sudo docker stop 476b35915fe1
+		Para parar basta dar um stop no ID do container desejado
+
+	$ sudo docker start 476b35915fe1
+		Para voltar com o container desejado, liga-lo novamente, basta dar um start no ID DESEJADO. verificando com "docker ps -a"
+
+	$ sudo docker ps
+
+Pelo docker usar uma imagem imutável, ele sobe instantaneo!
+
+
+04 Para remover o container:
+	$ sudo docker rm 476b35915fe1 -f
+		forçar caso ele esteja sendo usado.

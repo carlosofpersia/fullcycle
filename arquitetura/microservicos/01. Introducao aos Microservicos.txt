@@ -17,6 +17,9 @@ O que é um serviço
 	Independente de tecnologia ou produto;
 	Pode estabelecer comunicação com diversos clientes (sistemas, pessoas...)
 
+	A divisão de dos microserviços devem ser realizadas baseado em Problemas de negócio;
+	Uma característica comum na arquitetura baseada em microserviços é Maior tolerância a falha;
+
 SOA: Arquitetura Orientada a Serviços
 	Serviços normalmente maiores baseados em funcionalidades;
 	Necessidade de ESB - Enteprise Servicce Bus; (ESB camada onde todos os serviços se concentram para ser disponiblizados - SPF)
@@ -70,17 +73,12 @@ Aula 02 e 03
 				Cada squad é resonsável por um ou mais produtos;
 			Cada produto pode ter um ou mais serviços envolvidos;
 
-
-						----------------
-							Aula 03
-						----------------
-
 		3. Estrutura baseada em Produtos. Não em projetos;
 
 		4. Smart endpoints & Dump pipes;(Entrega e recebe mensagens)
 			Exposição de APIs (ex: Rest);
 			Comunicação entre serviços;
-			Comunicação sincrona e assincrona;
+			Comunicação sincrona e assincrona -> Deve ser o mais explicito possível;
 			Utilização de sistemas de mensageria (ex: Rabit/MQ);
 			Garantia de que um serviço foi executado baseado na execução das filas;
 
@@ -92,8 +90,16 @@ Aula 02 e 03
 		6. Descentralização no Gerenciamento de dados;
 
 		7. Automação de infraestrutura;
+			Deve ser muito ágil;
+			Cloud computing;
+			Testes automatizados;
+			Continuous delivery;
+			Continuous deployment;
+			Continuous integration;
+			Load balancer / Autoscaling;
 
 		8. Desenhado para Falhar;
+			Dependencias caso o microserviço caia, degradar funcionlidades, criar planoB;
 			Tolerância a falha;
 			Serviços que se comunicam precisam de fallback;
 			Logging;

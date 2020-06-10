@@ -44,70 +44,91 @@ Aula 02
 
 História da arquitetura
 	
-	* Tradicional
-		Metodologia de desenvolvimento: Waterfall (Cachoeira, processos acoplados)
-			Software Development LIFE Cycle -> 
-				1. Requirements Analysis;
-				2. Design;
-				3. Development;
-				4. Testing;
-				5. Maintenance.
-			Monolítica
-				Unico sistema que compõe todas as funcionalidades da aplicação;
-			Infraestrutura ON-PREMISE
-				É quando os servidores/datacenters estão fisicamente localizados nas instalações das empresas.
+* Tradicional
+	Metodologia de desenvolvimento: Waterfall (Cachoeira, processos acoplados)
+		Software Development LIFE Cycle -> 
+			1. Requirements Analysis;
+			2. Design;
+			3. Development;
+			4. Testing;
+			5. Maintenance.
+		Monolítica
+			Unico sistema que compõe todas as funcionalidades da aplicação;
+		Infraestrutura ON-PREMISE
+			É quando os servidores/datacenters estão fisicamente localizados nas instalações das empresas.
 
-	* Atual
-		Metodologia de desenvolvimento: AGILE;
-		Tipo de Aplicações: Multi-tier architecture;
-			Softwares distribuidos.
-		Infraestrutura: Virtualização.
+* Atual
+	Metodologia de desenvolvimento: AGILE;
+	Tipo de Aplicações: Multi-tier architecture;
+		Softwares distribuidos.
+	Infraestrutura: Virtualização.
 
-	* Emergente
-		Metodologia de desenvolvimento: DevOps / FullCycle;
-			Operação + Desenvolvimento -> Automatizados, Simples.
-		Tipo de Aplicações: Microserviços (serviços menores e independentes);
-		Infraestrutura: Containers.
+* Emergente
+	Metodologia de desenvolvimento: DevOps / FullCycle;
+		Operação + Desenvolvimento -> Automatizados, Simples.
+	Tipo de Aplicações: Microserviços (serviços menores e independentes);
+	Infraestrutura: Containers.
 
-	* Futuro
-		Metodologia de desenvolvimento: NoOps
-			Não precisaremos mais nos preocupar com os Processos inteiros, as aplicações ficarão nas Nuvens.
-		Tipo de Aplicações: Serverless Applications; Paga ON-Demand pelo acesso as funções.
-		Infraestrutura: Public Cloud.
+* Futuro
+	Metodologia de desenvolvimento: NoOps
+		Não precisaremos mais nos preocupar com os Processos inteiros, as aplicações ficarão nas Nuvens.
+	Tipo de Aplicações: Serverless Applications; Paga ON-Demand pelo acesso as funções.
+	Infraestrutura: Public Cloud.
 
 ------------------------------------------------------------------------------------------
 
-	Aula 03
+Aula 03
 
 
-	
+Sistemas Monoliticos
+	É apenas outra abordagem no mundo da arquitetura de software;
+	Características:
+		Tudo dentro do mesmo sistema;
+		Alto acoplamento;
+		Processo de Deploy "completo" a cada mudança;
+		Normalmente usa uma tecnologia;
+		Um problema afeta todo o sistema;
+		Maior complexidade para times;
+
+		Não é crime usar sistema monolítico;
+		Na maioria dos casos vai atender;
+		Menos complexidade na maiorida dos casos;
+		Sistema monolítico é vida!;
+
+	Escalando software:
+
+		Escala Vertical
+			É um processo que visa aumentar os recursos computacionais no mesmo node para escalar 
+			Aumentar recursos computacionais (mais memória + mais hd + mais processador );
+
+		Escala Horizontal
+			Adiciona mais máquinas. Loud Balancer -> usuairo 1 maquina 1, usuario 2 maquina 2....
+			Adicionar mais recursos ao mesmo node
+
+	Detalhes sobre a arquitetura da aplicação
+		Discos efemeros: a informação é temporária, se a maquina é destruida, perde a informação;
+		Servidor de aplicação VS Servidor de assets (objetos estáticos);
+		Cache centralizado;
+		Sessões centralizadas;
+		Upload/Gravação de arquivos;
+		Tudo que é facilmente destruido é facilmente construido;
+
+
+
+------------------------------------------------------------------------------------------
+
+Aula 04
 
 
 
 
+* Problema em sistemas monoliticos:
+	Times Grandes para um unico software;
+	Necessidade de escalar todo o sistema pq uma unica area esta entrando em pico de utilização dos recursos;
+	Risco de deploy (deploys perigosos) derrubar o sistema inteiro;
+	Necessidade de utilizar tecnologias diferentes;
 
 
-
-
-
-
-
-* Escalas
-
-Escala Vertical
-Aumentar recursos computacionais (mais memória + mais hd + mais processador )
-
-Escala Horizontal -> 
-	Adiciona mais máquinas. Loud Balancer -> usuairo 1 maquina 1, usuario 2 maquina 2....
-	Adicionar mais recursos ao mesmo node
-
-* Detalhes sobre a arquitetura da aplicação
-Discos efemeros: a informação é temporária, se a maquina é destruida, perde a informação;
-Servidor de aplicação VS Servidor de assets (objetos estáticos);
-Cache centralizado;
-Sessões centralizadas;
-Upload/Gravação de arquivos;
-* tudo que é facilmente destruido é facilmente construido;
 
 
 App
@@ -117,11 +138,6 @@ Static
 Cache
 DB
 
-* Problema em sistemas monoliticos:
-	Times Grandes para um unico software;
-	Necessidade de escalar todo o sistema pq uma unica area esta entrando em pico de utilização dos recursos;
-	Risco de deploy (deploys perigosos) derrubar o sistema inteiro;
-	Necessidade de utilizar tecnologias diferentes;
 
 
 
