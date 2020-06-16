@@ -1,0 +1,64 @@
+
+***** DOCKER *****
+
+Módulo 01 - Pilares
+	Conceitos Básicos do Docker;
+	Na prática;
+	Utilizar Docker-compose;
+
+Objetivos:
+	O que são Containers;
+		Um container é um padrão de unidade de software que empacota código e todas as dependências de uma aplicação fazendo que a mesma seja executada rapidamente de forma confiável de um ambiente computacional para o outro.
+
+	Como funcionam os Containers;
+		O sistema operacional tem diversos processos, existem processos para cada tarefa que executa.
+		Processos
+			Namespaces -> isolamento os processos (agrupamento|conjunto de processos pai -> (filhos1,2,3,4);
+				Pid
+				User
+				Network
+
+			Cgroups -> Controla os recursos. 
+				Isola e controla os recursos computacionais do container.
+					memory = 500MB
+					cpu_shares = 512
+
+			File System -> OFS (Overlay File System)
+				Se tiver que mudar a app1 só leva a diferença -> trabalha com camadas (layers)
+				É baseado no File System que consigo criar as Imagens.
+				Imagens: São criadas a partir de camadas (layers) -> Trabalham com dependencias de recursos de aplicações.
+
+		* Dockerfile:  é um arquivo declarativo para construir imagens
+			FROM: ImageName
+			RUN: Comandos ex: apt-get install
+			EXPOSE: 8000
+
+		* O Processo tem um container que utiliza uma Image com estado Imutável (Por isso que sobe tão rápido)
+			Quando o Docker sobe uma imagem, ele tem uma camada para gravação e escritar (READ/WRITE)
+
+		* O Dockerfile gera um build que gera uma imagem com estado Imutável com uma camada para leitura e escrita
+
+		Quando eu tenho uma imagem e dou commit (na camada de leitura e escrita) é gerado uma versão nova.
+
+		* As imagens ficam no IMAGE REGISTRY (ImageName, ImageY, ImageX);
+
+		* Dockerfile pull IMAGE REGISTRY 
+
+		* Quando tenho a imagem::V2 criada a partir da Imagem::V1 posso dar um - PUSH - no IMAGE REGISTRY.
+
+	Como o Docker funciona;
+		
+		Docker Client
+			Poder criar Containers, Run, Pull, Push, Volume, Network;
+
+		Docker Client -> (Docker HOST -> Daemon-API)
+
+		Docker HOST 
+			Daemon-API
+			Cache -> (PULL|PUSH) para IMAGE REGISTRY;
+			Volumes (Containers são imutáveis, quando o container morrer e tudo se perder, não perder as informações gravadas no Volume, este é o READ/WRITE);
+			Network (REDES) -> Comunicação entre containers (Containers PHP e MySQL se comunicarem); 
+
+Principais comandos utilizando Docker;
+Dockerfile;
+Trabalhando com imagens Docker;

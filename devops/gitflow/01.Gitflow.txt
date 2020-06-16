@@ -1,0 +1,83 @@
+
+
+***** GITFLOW - WORKFLOW *****
+
+Processo que visa utilizar o git como ferramenta para gerenciar a criação de novas features, correções de bugs e releases.
+
+Importancia da padronização do processo de desenvolvimento:
+
+	Errado:
+
+		$ git checkout -b formulario_de_registro
+		$ git checkout -b bug_01
+		$ git push origin master
+
+	Correto:
+
+		$ git checkout -b feature/registro
+		$ git checkout -b hotfix/registro
+		$ git push origin develop
+		$ git checkout master && git merge develop
+
+Premissas:
+
+	Padrão;
+	Legibilidade;
+	Processo.
+
+Como funciona o GITFLOW
+
+	MASTER
+		Código de produção;
+		Regra de OURO: Nunca commitar direto no master!
+
+	DEVELOP
+		Ciclo de devenvolimento, incluindo novas funcionalidades;
+		Features - Novas funcionalidades.
+			Develop -> Feature
+				$ git checkout develop
+				$ git checkout -b feature/register
+
+			Develop <- Feature
+				$ git checkout develop
+				$ git merge feature/register
+
+		Releases - Nova versão da aplicação.
+			Develop -> Release -> Master
+				$ git checkout develop
+				$ git checkout -b release/1.0.0
+				$ git checkout master
+				$ git merge release/1.0.0
+
+		Hotfix - Bugs|Erros
+			(Master, Develop) <- Hotfix
+				$ git checkout master
+				$ git merge hotfix/recurso
+				$ git checkout develop
+				$ git merge hotfix/recurso
+				$ git branch -D hotfix/recurso
+
+* Extensão GITFLOW (Fórmula mágica da PAZ!!!)
+
+	Existe uma extensão para facilitar todo o processo, porém a utilização da mesma é totalmente opcional.
+	Para iniciar um projeto usando a extensão: 
+
+	$ git flow init
+
+	Features:
+		Develop -> Feature
+		$ git flow feature start feature/register
+
+		Develop <- Feature
+		$ git flow feature finish feature/register
+
+	Releases:
+		Develop -> Release -> Master
+		$ git flow release start 1.0.0
+		$ git flow release finish '1.0.0'
+
+	Hotfix: 
+		(Master, Develop) <- Hotfix
+		$ git flow hotfix start hotfix/recurso
+		$ git flow hotfix finish hotfix/recurso
+

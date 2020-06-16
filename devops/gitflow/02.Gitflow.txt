@@ -1,0 +1,300 @@
+
+
+-----------------
+Aula 02 - Gitflow na prática
+----------------
+
+
+Install gitflow:
+	https://github.com/nvie/gitflow/wiki/Installation
+	https://github.com/nvie/gitflow/wiki/Linux
+
+$ apt-get install git-flow
+
+Iniciar projeto gitflow
+
+$ git flow init
+
+$ git flow init -f
+
+--------------------------------------------------------
+
+* Gerar uma FEATURE
+
+$ git flow feature start feature/meta01
+	carloss@carloss-note:~/Documents/Desenvolvimento/fullcycle-projetos$ git branch
+	  develop
+	* feature/register
+	  master
+
+$ touch register.html - criei um arquivo;
+
+$ nano register.html - coloquei alguma coisa para testar.
+
+$ git add .
+
+$ git commit -m "adicionando register"
+
+$ git flow feature finish register
+
+			Switched to branch 'develop'
+			Updating 3c6aa0d..f4b8a0f
+			Fast-forward
+			 register.html | 1 +
+			 1 file changed, 1 insertion(+)
+			 create mode 100644 register.html
+			Deleted branch feature/register (was f4b8a0f).
+
+			Summary of actions:
+			- The feature branch 'feature/register' was merged into 'develop'
+			- Feature branch 'feature/register' has been locally deleted
+			- You are now on branch 'develop'
+
+$ git branch
+	* develop
+	  master
+
+--------------------------------------------------------
+
+* Gerar uma RELEASE
+
+$ git flow release start 0.0.1
+
+			Switched to a new branch 'release/0.0.1'
+
+			Summary of actions:
+			- A new branch 'release/0.0.1' was created, based on 'develop'
+			- You are now on branch 'release/0.0.1'
+
+			Follow-up actions:
+			- Bump the version number now!
+			- Start committing last-minute fixes in preparing your release
+			- When done, run:
+
+$ git flow release finish '0.0.1'
+
+$ git flow hostfix start ajustando_sinal
+
+			Switched to a new branch 'hotfix/ajustando_sinal'
+
+			Summary of actions:
+			- A new branch 'hotfix/ajustando_sinal' was created, based on 'master'
+			- You are now on branch 'hotfix/ajustando_sinal'
+
+			Follow-up actions:
+			- Start committing your hot fixes
+			- Bump the version number now!
+			- When done, run:
+
+$ git flow hotfix finish 'ajustando_sinal'
+
+			Merge made by the 'recursive' strategy.
+			 register.html | 2 +-
+			 1 file changed, 1 insertion(+), 1 deletion(-)
+			Switched to branch 'develop'
+			Merge made by the 'recursive' strategy.
+			 register.html | 2 +-
+			 1 file changed, 1 insertion(+), 1 deletion(-)
+			Deleted branch hotfix/ajustando_sinal (was 86e8d7f).
+
+			Summary of actions:
+			- Hotfix branch 'hotfix/ajustando_sinal' has been merged into 'master'
+			- The hotfix was tagged 'ajustando_sinal'
+			- Hotfix tag 'ajustando_sinal' has been back-merged into 'develop'
+			- Hotfix branch 'hotfix/ajustando_sinal' has been locally deleted
+			- You are now on branch 'develop'
+
+
+$ git branch
+
+$ git tag
+
+
+-------------------------------------------------------------------------------------------------------------
+
+
+Para usar o terminar. 
+
+git config --global core.editor vim
+
+git config --list
+
+user.signingkey=ED4C219399ADF749
+user.email=carloseduardophp@gmail.com
+user.name=carlosofpersia
+core.editor=vim
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+gitflow.branch.master=master
+gitflow.branch.develop=develop
+gitflow.prefix.feature=feature/
+gitflow.prefix.bugfix=bugfix/
+gitflow.prefix.release=release/
+gitflow.prefix.hotfix=hotfix/
+gitflow.prefix.support=support/
+gitflow.prefix.versiontag=
+gitflow.path.hooks=/home/carloss/Documents/Desenvolvimento/fullcycle-projetos/.git/hooks
+
+-------------------------------------------------------------------------------------------------------------
+
+-----------------
+Aula 3 - Gitflow e Pull Requests.
+-----------------
+
+$ git remote add origin https://github.com/carlosofpersia/fullcycle-projetos-gitflow
+$ git push -u origin master
+$ git push -u origin develop --tags
+
+	//Abordagem 1 do proceso de push para o github.
+
+	$ git flow feature start esqueceu_senha_2
+	$ nano esqueceu_senha_2.html
+	$ git add .
+	$ git commit -m "Tela de Esqueci Senha de NOVO"
+		$ git push origin feature/esqueceu_senha_2
+		$ git checkout develop
+		$ git pull origin develop
+		$ git branch
+	$ git branch -D feature/esqueceu_senha_2
+
+
+	//Abordagem 2 do proceso de push para o github.
+
+	$ git flow feature start login
+		$ nano login.html
+		$ git add .
+		$ git commit -m "Tela de login"
+
+		$ git push origin feature/login
+
+		$ git push origin feature/login
+
+			Fazer o merge no github.
+
+	$ git flow feature finish login
+
+		$ git checkout develop
+		$ git pull origin develop
+		$ git log
+
+			Dessa forma devo fazer outro push para estabilizar a develop.
+
+
+
+
+
+	//Abordagem 3 do proceso de push para o github.
+
+	$ git flow feature start esqueci_email
+
+	...
+
+	$ git flow feature finish esqueci_email
+		Jà mata a branch e entra na develop.
+
+	$ git push origin develop
+		Nesse caso não precisarei fazer o pull request direto do git. ele faz daqui!
+
+-------------------------------------------------------------------------------------------------------------
+
+
+
+-----------------
+Aula 4 - Trabalhando com Releases.
+-----------------
+
+
+	//Abordagem 1 - Com git flow finish
+
+
+$ git flow release start 0.2.0
+$ git push origin release/0.2.0
+	resolvo o merge da release nesse caso direto para o master, pois vai para produção (release)
+	Não posso deletar a branch lá no github, senão não conseguirei realizar o git flow release finish ...
+
+$ git flow release finish '0.2.0'
+
+$ git branch
+$ git checkout master
+$ git pull origin master
+$ git checkout develop
+$ git merge master
+$ git log
+
+$ git push origin develop  --tags
+
+
+//Abordagem 2 - sem git flow finish
+Mando alguma coisa para o develop.
+
+$ git flow release start 0.2.1
+$ git push origin release/0.2.1
+$ git checkout master
+$ git branch
+$ git pull origin master
+$ git branch
+$ git branch -D release/0.2.1
+$ git tag
+$ git push origin master --tags
+
+
+$ git checkout develop
+$ git merge master
+	Sem alterações, tudo ok.
+
+-------------------------------------------------------------------------------------------------------------
+
+
+-----------------
+Aula 5 - Trabalhando com Hotfix (BUG).
+-----------------
+
+Trabalhar nos branches e subir tanto para o develop quanto para o master
+Todo hotfix é um bug de produção, deve portanto estar no master
+
+$ git flow hotfix start 0.1.1
+	Criou a nova branch a partir do master
+
+$ git flow hotfix finish '0.1.1'
+
+	
+	Nunca de o finish com o gitflow, muito trabalhoso devido o grande numero de merges
+
+$ git flow hotfix start 0.1.2
+
+altero alguma coisa commito e subo para o git
+$ git push origin hotfix/0.1.2
+faço o pull request para o master e deleto a branch. (se for usar o finish, não posso deletar a branch.)
+
+$ git checkout master
+$ git pull origin master
+$ git branch
+$ git branch -D hotfix/0.1.2
+
+
+$ git tag 0.1.2
+$ git checkout develop
+$ git merge master
+$ git push origin develop --tags
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+
+Refêrencias:
+
+	Instalacao GITFLOW
+	https://github.com/nvie/gitflow/wiki/Installation
+
+	Comandos GIT
+		https://gist.github.com/leocomelli/2545add34e4fec21ec16
+		https://medium.com/@lariodiniz/tutorial-git-com-git-flow-476ad906c8ae
+

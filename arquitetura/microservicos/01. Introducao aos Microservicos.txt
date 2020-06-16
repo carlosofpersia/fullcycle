@@ -1,0 +1,151 @@
+
+
+Aula 01
+
+* Problema em sistemas monoliticos:
+	Times Grandes para um unico software;
+	Necessidade de escalar todo o sistema pq uma unica area esta entrando em pico de utilização dos recursos;
+	Risco de deploy (deploys perigosos) derrubar o sistema inteiro;
+	Necessidade de utilizar tecnologias diferentes;
+
+***** Microserviços  *****
+
+O que é um serviço
+	Disponibiliza informação;
+	Realiza transações;
+	Resolve problemas de negócio;
+	Independente de tecnologia ou produto;
+	Pode estabelecer comunicação com diversos clientes (sistemas, pessoas...)
+
+	A divisão de dos microserviços devem ser realizadas baseado em Problemas de negócio;
+	Uma característica comum na arquitetura baseada em microserviços é Maior tolerância a falha;
+
+SOA: Arquitetura Orientada a Serviços
+	Serviços normalmente maiores baseados em funcionalidades;
+	Necessidade de ESB - Enteprise Servicce Bus; (ESB camada onde todos os serviços se concentram para ser disponiblizados - SPF)
+	SPF: Single point of failure; (Se cair em um ponto, cai tudo)
+	Compartilhamento de banco de dados é comum (compartilhamento do banco de dados);
+	Muitas vezes podem ter sistemas monolíticos sendo utilizados como serviços;
+
+Arquitetura baseada em Microserviços
+
+Microserviços
+	Serviços pequenos com poucas responsabilidades;
+	Maior tolerância a falhas;
+	Totalmente Independente (Próprio banco de dados, infraestrutura, processos de autenticação, prodcesso de deploy...);
+	Cada serviço possui ser próprio banco de dados;
+	Comunicação sincrona ou assincrona; 
+	Microserviços trabalha com FILAS - As filas armazenam as mensagens aguardando o microservios;
+
+Microserviços - Não são para todas as situações, não é moda é necessidade
+	Arquitetura +complexa;
+	Custo mais elevado;
+	Necessidade de mais equipes para manter;
+	Sistema precisa ser grande o suficiente para justificar;
+	Gera problemas que normalmente você não tinha antes;
+	Monitoramento complexo.
+
+
+-------------------------------------------------------------------------------------
+
+Aula 02 e 03
+
+* Microservios - Características (Martin Fowler):
+	9 Características/Categorias por Martin Fowler:
+
+		1. Componentização via serviços;
+
+			Services dos microserviços != Services da Orientação a Objetos;
+			Componente é uma unidade de software independente, que pode ser substituida ou atualizada;
+			Desvantagens: 
+				Chamadas externas são mais custosas do que chamadas locais;
+				Cruzamento entre componentes pode se tornar complexo;
+				Transações entre serviços são "Grandes Desafios";
+				Mudanças bruscas em regras de negócio podem afetar diversos serviços tornando o processo difícil de ser refeito.
+
+		2. Organização em torno do negócio;
+
+			Um projeto é baseado em um ou mais produtos que trabalham em diferentes contextos;
+			Contexto do produto quando completo deve ser feito para o negócio;
+			Time de desenvolvedores por produto;
+				Muitas empresas tratam os times como Squads;
+				Cada squads é multidisciplinar;
+				Cada squad é resonsável por um ou mais produtos;
+			Cada produto pode ter um ou mais serviços envolvidos;
+
+		3. Estrutura baseada em Produtos. Não em projetos;
+
+		4. Smart endpoints & Dump pipes;(Entrega e recebe mensagens)
+			Exposição de APIs (ex: Rest);
+			Comunicação entre serviços;
+			Comunicação sincrona e assincrona -> Deve ser o mais explicito possível;
+			Utilização de sistemas de mensageria (ex: Rabit/MQ);
+			Garantia de que um serviço foi executado baseado na execução das filas;
+
+		5. Governança descentralizada;
+			Ferramenta certa para o trabalho certo. Tecnologias podem ser definidas baseadas na necessidade do produto;
+			Diferentes padrões entre squads;
+			Contratos de interface de forma independente;
+
+		6. Descentralização no Gerenciamento de dados;
+
+		7. Automação de infraestrutura;
+			Deve ser muito ágil;
+			Cloud computing;
+			Testes automatizados;
+			Continuous delivery;
+			Continuous deployment;
+			Continuous integration;
+			Load balancer / Autoscaling;
+
+		8. Desenhado para Falhar;
+			Dependencias caso o microserviço caia, degradar funcionlidades, criar planoB;
+			Tolerância a falha;
+			Serviços que se comunicam precisam de fallback;
+			Logging;
+			Monitoramento em tempo real;
+			Alarmes;
+
+		9. Design evolutivo.
+			Produtos bem definidos podem evoluir ou serem extintos por razões de negócio;
+			Gerenciamento de versões;
+			Replacement and upgradeability;
+
+
+-----------------------------------------------------------------------------
+
+Aula 4 e 5
+
+
+* Conceios e padrões para comunicação entre microservios
+
+	* API GATEWAYS
+	Uma API GATEWAY recebe todas as chamadas de APIs dos clientes e então as roteia para os microserviços correspondentes... (nginx.com)
+	Em alguns casos ela também é responsável por realizar processos de verificação de segurança, como autenticação e autorização.
+		O cliente solicita, Tudo cai nele (bloco api gateway) e ele faz o roteamento.
+		Serveless + Lambdas Functions
+		Em vez de eu saber os endpoints dos microserviços, delego a responsábilidade do roteamento as API GATEWAY.
+
+	* Service Discovery (Escalonamento de services)
+		Processo de service Discovery é responsável por prover mecanismos de identificação dos serviços disponiveis e suas instancias.
+		Qual node escolher;
+		E se os IPs forem dinâmicos;
+		Service Discovery - Client Side / Server Side;
+			Kubernets é o responsável pelo balanceamento de cargas
+			Load Balancer; ele sabe qual serviço está disponível pelo service registry
+			Service Registry; Registra os Serviços (Nodes)
+			O client acessa qual node? o load balancer vai no service registry verificar qual camarada deve ser chamado.
+			Client -> Load Balancer -> Service Registry -> ( Server Side [Service Node 1, Service Node 2, Service Node 3]);
+
+		Ferramentas populares para Service Discovery:
+			Netflix Eureka; 
+			Consul; 
+			Etcd;
+			ZooKeeper.
+
+--------------------------------------------------------------------------------------
+
+
+Referências:
+
+	https://martinfowler.com/articles/microservices.html

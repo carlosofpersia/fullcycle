@@ -1,0 +1,48 @@
+
+Docker - Comandos Básicos
+
+	https://hub.docker.com/
+	https://www.freecodecamp.org/news/how-to-remove-images-in-docker/#:~:text=Docker%20rmi&text=To%20remove%20the%20image%2C%20you,your%2Dimage%2Did%3E%20.
+
+$ docker run 
+	container desejado;
+	Quando não coloco a versão, ele me traz a última versão da imagem.
+	hello-word:latest
+
+$ docker login: "carlosofpersia"
+
+$ docker run hello-world
+	cria um container e baixa e instala a imagem hello-world, que alguem criou no hub.docker e já roda;
+
+$ docker ps 
+	mostra os containers que estão rodando;
+
+$ docker ps -a 
+	mostra os containers que estão rodando + os que foram criados e ja estão mortos;
+
+$ docker rm 18e67ecbe43f 
+	ou pelo nome;
+	remove o container;
+	A imagem é deletada, mas se eu fizer um docker run hello-world novamente ela não faz mais  download, pois já está no cache;
+
+
+$ docker images
+$ docker images -a
+	Apresenta as imagens do docker
+
+$ docker rmi <your-image-id>
+$ docker rmi <your-image-id> <your-image-id> ...
+
+$ docker rmi bf756fb1ae65
+$ docker rmi bf756fb1ae65 -f
+	Remove imagens pelo ID
+	Não remove se o container estiver parado, para isso usar:
+
+
+
+To remove all images there is a simple command to do that. docker rmi $(docker images -q)
+Stop all running containers: docker stop $(docker ps -a -q)
+Delete all stopped containers: docker rm $(docker ps -a -q)
+
+
+
