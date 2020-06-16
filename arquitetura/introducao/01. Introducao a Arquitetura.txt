@@ -119,31 +119,30 @@ Sistemas Monoliticos
 
 Aula 04
 
+Distribuição de responsábilidades
+Desenvolver softares delegando responsábilidades;
+	
+	App (Deve servir somente um servidor de aplicação)
+		Proxy reverso (servidor de proxy - Servidor WEB - NGINX)
+		Elastic (Servidor de pesquisa - como um banco de dados)
+		Static (Servidor de Assets - onde ficam as imagens)
+		Cache (Não manter na mesma da APP)
+		DB	  (Não manter na mesma da APP)
 
+Mesmao assim, ainda é uma aplicação monolítica, mas em escala Horizontal.
 
+Escala horizontal: Aplicação Monolítica:
 
-* Problema em sistemas monoliticos:
-	Times Grandes para um unico software;
-	Necessidade de escalar todo o sistema pq uma unica area esta entrando em pico de utilização dos recursos;
-	Risco de deploy (deploys perigosos) derrubar o sistema inteiro;
-	Necessidade de utilizar tecnologias diferentes;
+	Ter imagens / containers;
+	Ser facilmente reconstruída;
+	Ter suas responsabilidades, incluindo assets, ets...
+	Sim, aplicações monolíticas podem ser totalmente escaláveis.
 
+Quando a aplicações monolíticas podem parar de valer a pena:
 
-
-
-App
-proxy reverso
-Elastic
-Static
-Cache
-DB
-
-
-
-
-
-
-
-
-
+	Problemas em sistemas monoliticos:
+		Times Grandes para um unico software;
+		Necessidade de escalar todo o sistema pq uma unica area esta entrando em pico de utilização dos recursos;
+		Risco de um deploy completo começa a se elevar e ficar perigoso - Pode afetar/derrubar o sistema inteiro;
+		Necessidade de utilizar tecnologias diferentes;
 

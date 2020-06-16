@@ -246,6 +246,49 @@ $ git merge master
 
 -------------------------------------------------------------------------------------------------------------
 
+
+-----------------
+Aula 5 - Trabalhando com Hotfix (BUG).
+-----------------
+
+Trabalhar nos branches e subir tanto para o develop quanto para o master
+Todo hotfix é um bug de produção, deve portanto estar no master
+
+$ git flow hotfix start 0.1.1
+	Criou a nova branch a partir do master
+
+$ git flow hotfix finish '0.1.1'
+
+	
+	Nunca de o finish com o gitflow, muito trabalhoso devido o grande numero de merges
+
+$ git flow hotfix start 0.1.2
+
+altero alguma coisa commito e subo para o git
+$ git push origin hotfix/0.1.2
+faço o pull request para o master e deleto a branch. (se for usar o finish, não posso deletar a branch.)
+
+$ git checkout master
+$ git pull origin master
+$ git branch
+$ git branch -D hotfix/0.1.2
+
+
+$ git tag 0.1.2
+$ git checkout develop
+$ git merge master
+$ git push origin develop --tags
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+
 Refêrencias:
 
 	Instalacao GITFLOW

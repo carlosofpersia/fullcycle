@@ -1,11 +1,14 @@
 
+------------
+  Aula 04
+------------
+
 Baixar nginx
 https://hub.docker.com/_/nginx
 
 Conferir se está tudo ok.
 $ sudo docker ps -a
 $ sudo docker images -a
-
 
 $ sudo docker run nginx:latest
 	Já instala e roda
@@ -35,3 +38,37 @@ Pelo docker usar uma imagem imutável, ele sobe instantaneo!
 04 Para remover o container:
 	$ sudo docker rm 476b35915fe1 -f
 		forçar caso ele esteja sendo usado.
+
+
+------------
+Aula 05
+------------
+
+
+$ docker ps -a
+
+$ docker images -a
+
+
+01 Colocar o nome no containers
+
+	$ sudo docker run -d --name nginxAlpine nginx:alpine 
+	$ sudo docker run -d --name nginxDefaultLinux nginx:latest
+
+	$ sudo docker ps
+
+	$ sudo docker stop nginxAlpine
+	$ sudo docker stop nginxDefaultLinux
+
+02 Expor uma porta do nosso computador
+	Mapear uma porta da maquina para o container 
+	porta_minha_maquina_linux:porta_meu_container_nginx
+	Porta: 0.0.0.0:8080->80/tcp -> 8080
+	http://localhost:8080/ -> browser que vou testar por exemplo.
+
+	$ sudo docker run -d --name nginxAlpinePorta -p 8080:80 nginx:alpine (localhost:8080)
+	$ sudo docker run -d --name nginxAlpinePorta2 -p 80:80 nginx:alpine (localhost)
+
+
+
+
