@@ -1,5 +1,5 @@
 
-------------
+------------------------------------------------------------------------------------
   Aula 04
 ------------
 
@@ -40,7 +40,7 @@ Pelo docker usar uma imagem imutável, ele sobe instantaneo!
 		forçar caso ele esteja sendo usado.
 
 
-------------
+------------------------------------------------------------------------------------
 Aula 05
 ------------
 
@@ -69,6 +69,52 @@ $ docker images -a
 	$ sudo docker run -d --name nginxAlpinePorta -p 8080:80 nginx:alpine (localhost:8080)
 	$ sudo docker run -d --name nginxAlpinePorta2 -p 80:80 nginx:alpine (localhost)
 
+
+
+
+------------------------------------------------------------------------------------
+Aula 06
+------------
+
+Executar comandos no container
+	Lembrando que o container é baseado em uma imagem e ela é imutável, nós alteramos no layer do container onde existe um READ/WRITE;
+
+
+$ sudo docker run --name nginxDefaultLinuxLatest -d -p 80:80 nginx:latest
+
+Docker exec para executar comandos no meu container;
+
+$ sudo docker exec nginxDefaultLinuxLatest ls (listando dentro do container)
+$ docker exec nginxDefaultLinuxLatest uname -a
+	Rodei o comando uname -a dentro do container de nome nginxDefaultLinuxLatest;
+
+$ docker exec -i -t nginxDefaultLinuxLatest bash (ou -it)
+	Nesse comando eu consigo fazer uma interação input output com o container, somente o bash ele roda, mas não deixa fazer nada lá dentro;
+
+
+$ sudo docker exec -i -t nginxDefaultLinuxLatest bash (terminal)
+root@91548a32be28:/# ls
+root@91548a32be28:/# cd /usr/share/nginx/html/
+root@91548a32be28:/usr/share/nginx/html# nano index.html (da pau)
+root@91548a32be28:/usr/share/nginx/html# apt-get update
+root@91548a32be28:/usr/share/nginx/html# apt-get install vim
+
+
+root@91548a32be28:/usr/share/nginx/html# vi index.html 
+
+altera o arquivo ....
+
+
+e testa no browser "http://localhost/"
+
+root@91548a32be28:/# exit
+
+TOPISSIMO!
+
+
+------------------------------------------------------------------------------------
+Aula 07
+------------
 
 
 

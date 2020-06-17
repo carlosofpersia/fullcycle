@@ -1,0 +1,51 @@
+
+
+
+------------------
+	Aula 01
+------------------
+
+
+Comunicação entre microserviços
+
+	Microserviços consultam uns aos outros de forma sincrona e assincrona;
+
+	Sincrona
+
+		Processo em tempo real, Request e Response;
+
+		Processo Travado = Request, Aguardando... e Response;
+
+	Assincrona
+		MicroServicoA, Messageria e MicroServicoB;
+
+
+------------------
+	Aula 02
+------------------
+
+Mecanismos de filas - com a ferramenta Rabbitmq
+
+Message Broker
+	Broker é um jargão ingles para intermediário 
+		Intermediação entre o cara que quer vender a casa e o cara que quer comprar a casa;
+Implementa AMQP (Advanced Message Queuing Protocol);
+Producers <=> Brokers <=> Consumers;
+Desacoplamento entre serviços;
+Rápido e Poderoso;
+Padrão de mercado;
+
+* Producer (routing key) -> Exchange (binding key ) -> (Queue -> Consumer | Queue -> Consumer | Queue -> Consumer);
+	Fanout -> ela deve ser encaminhada para todas as filas;
+	Direct -> Routing key = binding key;
+	Topic -> Parcial Matching;
+
+
+
+
+
+------------------
+	Aula 03
+------------------
+
+
