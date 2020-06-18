@@ -1,7 +1,7 @@
 
 
 
-------------------
+------------------------------------------------------------------------------------------------------------
 	Aula 01
 ------------------
 
@@ -10,6 +10,8 @@ Comunicação entre microserviços
 
 	Microserviços consultam uns aos outros de forma sincrona e assincrona;
 
+
+
 	Sincrona
 
 		Processo em tempo real, Request e Response;
@@ -17,14 +19,17 @@ Comunicação entre microserviços
 		Processo Travado = Request, Aguardando... e Response;
 
 	Assincrona
+		Evita que processos fiquem travados quando recebem uma solicitação;
 		MicroServicoA, Messageria e MicroServicoB;
 
 
-------------------
+------------------------------------------------------------------------------------------------------------
 	Aula 02
 ------------------
 
 Mecanismos de filas - com a ferramenta Rabbitmq
+
+RabbitMQ implementa o protocolo: AMQP - Advanced Message Queuing Protocol
 
 Message Broker
 	Broker é um jargão ingles para intermediário 
@@ -40,12 +45,54 @@ Padrão de mercado;
 	Direct -> Routing key = binding key;
 	Topic -> Parcial Matching;
 
+	* (FAN OUT pode ser considerado: Uma forma de distribuir uma mensagem para todas as filas )
 
 
+	Normalmente a comunicação entre microserviços se dá através de: Serviços de mensageria;
 
-
+------------------------------------------------------------------------------------------------------------
+	Aula 03 - Dupla Latência
 ------------------
-	Aula 03
+
+Dupla latência pode ser considerada quando:
+ 	Microserviços precisam se comunicar antes de uma response ser enviada 
+
+	Medida de entrega e resposta de solicitações de um microserviço para o outro.
+
+Cliente -> request -> Sistema monolítico;
+	(load balance)
+	Cliente <- response <- Sistema monolítico;
+
+--
+
+Cliente -> Request -> API Gateway -> Service A -> Fila -> Service B
+
+	Cliente <- Response <- API Gateway <- Service A <- Fila <- Service B
+
+
+------------------------------------------------------------------------------------------------------------
+	Aula 04 - BFF -> Backend for Frontend
 ------------------
 
 
+
+BFF -> Backend for Frontend
+https://samnewman.io/patterns/architectural/bff/
+
+Mobile + Browser + Desktop acessam serviços backend.
+
+Agora o BFF aborda que cada forma de cliente tenha uma camada de backend específico
+
+IOS Mobile Cliente + IOS Mobile Cliente BFF;
+Android Mobile Cliente + Android Mobile Cliente BFF;
+
+A idéia é garantir que a performance de disposítivos sejam específicas para seus recursos.
+Limita as consultas e retornos para cada tipo de Frontend (Clientes);
+
+
+
+21h26
+15 min
+
+
+	

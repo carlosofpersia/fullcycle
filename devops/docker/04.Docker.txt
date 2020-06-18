@@ -113,8 +113,28 @@ TOPISSIMO!
 
 
 ------------------------------------------------------------------------------------
-Aula 07
+Aula 07 - Iniciando com Volumes
 ------------
+7
+Container + Volume
+	Alterações no container (nginx) são perdidas quando perde o container, o volume é um layer a mais no docker para trabalhar como uma adição a imagem do container que é imútavel.
 
+$ sudo docker run -d --name nginx_default_latest -p 8080:80 -v $(pwd):/usr/share/nginx/html nginx:latest
+
+$ docker exec -it nginx_default_latest bash
+
+crio um arquivo altero e by...
+touch index.html
+vi index.html
+
+salvo o arquivo ....
+
+e testa no browser "http://localhost/"
+
+
+
+------------------------------------------------------------------------------------
+Aula 08 - Continuando com volumes
+------------
 
 
