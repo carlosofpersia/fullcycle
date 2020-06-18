@@ -37,6 +37,8 @@ Microserviços
 	Comunicação sincrona ou assincrona; 
 	Microserviços trabalha com FILAS - As filas armazenam as mensagens aguardando o microservios;
 
+	* Quando um microserviço solicita de outro uma informação diretamente, normalmente a comunicação é: Síncrona
+
 Microserviços - Não são para todas as situações, não é moda é necessidade
 	Arquitetura +complexa;
 	Custo mais elevado;
@@ -126,16 +128,22 @@ Aula 4 e 5
 		Serveless + Lambdas Functions
 		Em vez de eu saber os endpoints dos microserviços, delego a responsábilidade do roteamento as API GATEWAY.
 
+		Uma API Gateway também: - Pode tratar de aspectos de segurança e autenticação da aplicação;
+								- Recebe todas as chamadas dos clientes e as roteia para os serviços correspondentes;
+
 	* Service Discovery (Escalonamento de services)
 		Processo de service Discovery é responsável por prover mecanismos de identificação dos serviços disponiveis e suas instancias.
 		Qual node escolher;
 		E se os IPs forem dinâmicos;
-		Service Discovery - Client Side / Server Side;
+		Dois tipos de utilização de um Service Discovery - Client Side / Server Side;
 			Kubernets é o responsável pelo balanceamento de cargas
 			Load Balancer; ele sabe qual serviço está disponível pelo service registry
 			Service Registry; Registra os Serviços (Nodes)
 			O client acessa qual node? o load balancer vai no service registry verificar qual camarada deve ser chamado.
 			Client -> Load Balancer -> Service Registry -> ( Server Side [Service Node 1, Service Node 2, Service Node 3]);
+
+		Um Service Discovery conta com um Service Registry para buscar os serviços disponíveis;
+	 	Um processo que auxilia mecanismos de identificação dos serviços disponíveis e suas instâncias;
 
 		Ferramentas populares para Service Discovery:
 			Netflix Eureka; 
