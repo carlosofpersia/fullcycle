@@ -1,0 +1,48 @@
+
+
+Boas práticas sobre programação orientada a objetos;
+
+-----------------------------------------------------------------------------------
+	Aula 01
+--------------------
+
+Introdução ao SOLID:
+	é um acrônimo (itens e regras) que consolida 5 itens que são considerados como boas práticas no mundo do desenvolvimendo orientado a objetos.
+
+	Criado por Robert C. Martin (UNCLE|TIO BOB)  no Livro Agile Software Development (Principles, Patterns, and Practices);
+
+	SRP = Single Responsibility Principle;
+	OCP = Open-closed Principle;
+	LSP = Liskov Substitution Principle;
+	ISP = Interface Segregation Principle;
+	DIP = Dependency Inversion Principle.
+
+-----------------------------------------------------------------------------------
+	Aula 02
+--------------------
+
+SOLID - S - Single Responsibility Principle (SRP);
+
+	Princípio da responsáblidade única;
+	Uma classe deve ter uma unica responsábilidade;
+	Uma classe deve ter um e apenas um motivo para mudar;
+
+-----------------------------------------------------------------------------------
+	Aula 03
+--------------------
+
+SOLID - O - Open Closed Principle
+
+	Aberta para extensão e Fechada para Implementação
+
+	Criar uma base (abstract) para a classe e sempre que precisar algo novo, extende-la para criar as novas implementações.
+	Muito próximo ao Padrão de Projetos Strategy
+
+
+
+
+
+
+
+
+

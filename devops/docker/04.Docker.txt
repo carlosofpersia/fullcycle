@@ -134,7 +134,150 @@ e testa no browser "http://localhost/"
 
 
 ------------------------------------------------------------------------------------
-Aula 08 - Continuando com volumes
+Aula 08 - Continuando com volumes (Bind)
 ------------
+
+Bind de Volume -> seta o diretório e seu containter;
+
+$ sudo docker volume ls
+
+$ sudo docker volume create vol_test 
+	Cria um volume local do conatainer;
+
+$ sudo docker volume --help
+
+$ sudo docker volume inspect vol_test
+	Apresenta as informacoes do volume;
+$ sudo docker volume prune
+	excluir todos os volumes, desde que não estejam atachados.
+
+
+1.
+$ sudo docker volume create --driver local --opt type=none --opt device=$(pwd) --opt o=bind volume_local
+	Cria um volume local apontando para o computador real e não no próprio container;
+
+2.
+$ sudo docker run -d --name=nginx2_with_volume -p 8081:80 -v volume_local:/usr/share/nginx/html nginx
+
+$ sudo docker ps
+
+
+Alterar o arquivo do computador: /home/carloss/Documents/Desenvolvimento/fullcycle-projetos-docker/index.html
+
+e testar no browser ]
+http://localhost:8080/
+http://localhost:8081/
+
+A diferença criando o volume é que ele é criado e defini antes de criar uma nova imagem e quando a imagem é criada o volume pode ser atachado a ela. Este volume poderia ser criado nas nuvens também.
+Enquando o volume estiver atachado em algum container, ele não pode ser excluído.
+Bom para compartilhar chaves ssh, entre outros recursos externos.x'
+
+
+
+------------------------------------------------------------------------------------
+Aula 09 - Trabalhando com Networks
+------------
+
+	Um container trabalhando com outros (Networks)
+		3 tipos de redes
+			Bridge (Mais comum - DEFAULT);
+			none (somente rede local -> container isolado);
+			host (o container fala com a rede do meu computador de igual para igual);
+
+$ sudo docker network ls
+
+$ sudo docker run -d --name nginx1 nginx
+$ sudo docker run -d --name nginx2 nginx
+
+
+$ sudo docker exec -it nginx1 bash
+	# apt-get update
+
+$ sudo docker exec -it nginx2 bash
+	# apt-get update
+
+
+$ sudo docker exec -it nginx1 bash
+	ping nginx2
+		bash: ping: command not found
+
+$ sudo docker network ls 
+	bridge é o default -> para saber qual os ips devemos dar um inspect brige
+
+$ sudo docker network inspect bridge
+	nginx1: "IPv4Address": "172.17.0.2/16";
+	nginx2: "IPv4Address": "172.17.0.3/16";
+
+$ sudo docker exec -it nginx1 bash
+# apt-get update
+# apt-get install iputils-ping (caso o ping não funcione)
+# ping 172.17.0.3
+
+------------
+Resolução de name com redes do docker com network
+usar o network pelos nomes dos containers, sem precisar usar o IP.
+	Criar um canal de networks, devo criar minha própria rede
+
+$ sudo docker network create -d bridge my_first_network
+$ sudo docker network ls 
+
+------------
+
+$ sudo docker run -d --name nginx3 --net=my_fist_network nginx 
+	IP: 172.18.0.3 - nginx3
+
+$ sudo docker run -d --name nginx4 --net=my_fist_network nginx
+	IP: 172.18.0.2 - nginx4
+
+$ sudo docker exec -it nginx3 bash
+# apt-get update
+# apt-get install iputils-ping (caso o ping não funcione)
+# ping 172.17.0.3 (nginx2)
+# ping nginx4
+
+* Os containers só conseguem se comunicar se estiverem na mesma rede
+	* Os ping só funcionam com a mesma rede (ou bridge com bridge, ou my_fist_network com my_fist_network).
+
+
+
+------------------------------------------------------------------------------------
+Aula 09 - Docker Commit
+------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***********************************************************************************
+
+comando muito importante para entrar no modo terminal do Docker (linha de comando):
+* sudo docker exec -it nome_do_container_ou_id bash
+
+
+
+
+
+
+
 
 
