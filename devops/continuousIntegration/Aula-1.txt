@@ -1,0 +1,44 @@
+
+Continous Integration - CI
+
+https://www.cloudbees.com/continuous-delivery/continuous-integration
+
+É uma pratica de desenvolvimento que visa integrar o código de diversos membros de um time através de um repositório compartilhado. Cada integração é verificada através de builds de testes automatizados.
+
+
+CI é vida!
+
+	Automatiza os procssos e - garante - que o código de todos está funcionando em conjunto;
+
+	Detecta erros antes de eles irem para produção;
+
+	Garante que o build está sendo gerado corretamente.
+
+Boar práticas
+
+	Pipeline Rápido;
+	Ambiente Isolado;
+	Rodar primeiro os testes mais rápidos;
+	Todos do time podem ter acesso aos resultados.
+
+Ferramentas populares
+
+	Jenkins;
+	CircleCI;
+	Travis;
+	Google Cloud Build;
+	Amazon Cloud Build;
+	Azure Pipelines;
+	GitLab CI;
+	Codeship;
+	Go CD;
+	Team City.
+
+
+
+	
+
+
+
+	
+
