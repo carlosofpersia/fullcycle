@@ -1,0 +1,40 @@
+version: '3'
+services:
+  productapp:
+    #procura para construir o Dockerfile no mesmo diretório deste arquivo
+    build: .
+    # ./ -> disco local, : -> para, /var/www -> local do arquivo no container docker
+    # volumes -> nao perco informacao pq esta na minha maquina local
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - productapp-mysql
+      - productapp-redis
+
+  productapp-mysql:
+    image: mysql:5.7.22
+    command: --innodb-use-native-aio=0
+    restart: always
+    ports:
+      - "3306"
+    volumes:
+      - "./.docker/dbdata:/var/lib/mysql"
+    environment:
+      MYSQL_DATABASE: productapp
+      MYSQL_ROOT_PASSWORD: root
+
+  productapp-nginx:
+    build: ./.docker/nginx
+    restart: always
+    # quando eu digitar no meu compudador localhost:8001 eu vou estar acessando a 80 do container docker
+    ports:
+      - "8001:80"
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - productapp
+
+  productapp-redis:
+    image: redis:alpine
+    expose:
+      - 6379

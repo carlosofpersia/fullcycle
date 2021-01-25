@@ -1,4 +1,4 @@
-
+https://github.com/codeedu/jornada-microservicos
 ------------------------------------------------------------------------------------
   Aula 04
 ------------
@@ -114,6 +114,7 @@ TOPISSIMO!
 
 ------------------------------------------------------------------------------------
 Aula 07 - Iniciando com Volumes
+-v $(pwd):/usr/share/nginx/html -> path.local:path.docker
 ------------
 7
 Container + Volume
@@ -134,7 +135,1842 @@ e testa no browser "http://localhost/"
 
 
 ------------------------------------------------------------------------------------
-Aula 08 - Continuando com volumes
+Aula 08 - Continuando com volumes (Bind)
+path.local:path.docker
 ------------
+
+Bind de Volume -> seta o diretório e seu containter;
+
+$ sudo docker volume ls
+
+$ sudo docker volume create vol_test 
+	Cria um volume local do conatainer;
+
+$ sudo docker volume --help
+
+$ sudo docker volume inspect vol_test
+	Apresenta as informacoes do volume;
+$ sudo docker volume prune
+	excluir todos os volumes, desde que não estejam atachados.
+
+1. 
+	// device=$(pwd) -> endereco local que deve setar.
+	// Cria um volume local apontando para o computador real e não no próprio container;
+	// posso criar esse volume atachando na local, amazon, google...
+$ sudo docker volume create --driver local --opt type=none --opt device=$(pwd) --opt o=bind volume_local
+	
+
+2. 
+	// -v volume_local:/usr/share/nginx/html -> path.local:path.docker
+$ sudo docker run -d --name=nginx2_with_volume -p 8081:80 -v volume_local:/usr/share/nginx/html nginx
+
+$ sudo docker ps
+
+Alterar o arquivo do computador: /home/carloss/Documents/Desenvolvimento/fullcycle-projetos-docker/index.html
+
+e testar no browser ]
+http://localhost:8080/
+http://localhost:8081/
+
+A diferença criando o volume é que ele é criado e defini antes de criar uma nova imagem e quando a imagem é criada o volume pode ser atachado a ela. Este volume poderia ser criado nas nuvens também.
+Enquando o volume estiver atachado em algum container, ele não pode ser excluído.
+Bom para compartilhar chaves ssh, entre outros recursos externos.x'
+
+Resumo: 
+* Comando para usar o volume independente e vincular ao meu docker.
+$ sudo docker volume create --driver local --opt type=none --opt device=$(pwd) --opt o=bind nome_volume_local
+$ sudo docker volume ls
+$ sudo docker volume inspect nome_volume_local
+$ sudo docker run -d --name=nginx2_with_volume -p 8081:80 -v nome_volume_local:/usr/share/nginx/html nginx
+
+
+
+------------------------------------------------------------------------------------
+Aula 09 - Trabalhando com Networks
+------------
+
+	Um container trabalhando com outros (Networks)
+		3 tipos de redes
+			Bridge (Mais comum - DEFAULT);
+			none (somente rede local -> container isolado);
+			host (o container fala com a rede do meu computador de igual para igual);
+
+$ sudo docker network ls
+
+$ sudo docker run -d --name nginx1 nginx
+$ sudo docker run -d --name nginx2 nginx
+
+
+$ sudo docker exec -it nginx1 bash
+	# apt-get update
+
+$ sudo docker exec -it nginx2 bash
+	# apt-get update
+
+
+$ sudo docker exec -it nginx1 bash
+	ping nginx2
+		bash: ping: command not found
+
+$ sudo docker network ls 
+	bridge é o default -> para saber qual os ips devemos dar um inspect brige
+
+$ sudo docker network inspect bridge (pegar os IPs)
+	nginx1: "IPv4Address": "172.17.0.2/16";
+	nginx2: "IPv4Address": "172.17.0.3/16";
+
+$ sudo docker exec -it nginx1 bash
+# apt-get update
+# apt-get install iputils-ping (caso o ping não funcione)
+# ping 172.17.0.3
+
+------------
+
+Resolução de name com redes do docker com network
+usar o network pelos nomes dos containers, sem precisar usar o IP.
+	Criar um canal de networks, devo criar minha própria rede
+
+$ sudo docker network create -d bridge my_first_network
+$ sudo docker network ls 
+
+------------
+
+$ sudo docker run -d --name nginx3 --net=my_fist_network nginx 
+	IP: 172.18.0.3 - nginx3
+
+$ sudo docker run -d --name nginx4 --net=my_fist_network nginx
+	IP: 172.18.0.2 - nginx4
+
+$ sudo docker exec -it nginx3 bash
+# apt-get update
+# apt-get install iputils-ping (caso o ping não funcione)
+# ping 172.17.0.3 (nginx2)
+# ping nginx4
+
+* Os containers só conseguem se comunicar se estiverem na mesma rede
+	* Os ping só funcionam com a mesma rede (ou bridge com bridge, ou my_fist_network com my_fist_network).
+
+
+
+------------------------------------------------------------------------------------
+Aula 10 - Docker Commit - Meu primeiro Commit a partir de um existente.
+Aproveitar um container existente na web e criar as suas novas configuracoes a partir dela.
+------------
+
+Imagens - SNAPSHOTs
+
+Listar containers ativos
+$ sudo docker ps
+Listar containers rodando, mas dormindo
+$ sudo docker ps -a
+Listar containers rodando, somente o hash
+$ sudo docker ps -a -q
+
+* Apagar tudo para recomecar: 
+$ sudo docker rm $(docker ps -a -q) -f
+
+* depois da porta eu coloco o nome do container a ser criado de acordo com o site do docker ex: "nginx"
+$ sudo docker run -d --name=nginx -p 8080:80 nginx
+//-it interacao de entrada e saida no bash.
+$ docker exec -it nginx bash
+	cd /usr/share/nginx/html#
+	ls
+	apt-get update
+	apt-get install vim
+	vim index.html (Editar)
+	exit
+
+* Pegar o ID do meu container nginx que e o que eu quero. (CONTAINER ID - 1603f0c6b364)
+$ sudo docker ps
+
+// Gerar o commit da minha versao da imagem, a partir dela serao criadas as outras imagens 
+// usar o login do docker para fazer o push futuramente (carlosofpersia).
+// pegar o hash da imagem que quero no caso nginx - 1603f0c6b364
+$ sudo docker images 
+// sem a versao sera a :latest
+$ sudo docker commit 1603f0c6b364 carlosofpersia/nginx-first-commit-image
+
+Verei que foi criada uma nova imagem "carlosofpersia/nginx-first-commit-image"
+$ sudo docker images
+
+Criar um novo container a partir da minha imagem criada:
+$ sudo docker run -d --name=nginxNomeDoContainer -p 8082:80 carlosofpersia/nginx-first-commit-image:v2
+$ sudo docker ps
+
+$ docker exec -it nginxNomeDoContainer bash
+	cd /usr/share/nginx/html
+	ls
+	apt-get update
+	apt-get install vim
+	vim index.html (Editar)
+	exit
+
+Pegar o hash do meu repositorio criado e fazer uma nova versao v2
+
+$ sudo docker images 
+//pegar o novo hash da versao commitada (bf62f0c4e5ea)
+$ sudo docker commit bf62f0c4e5ea carlosofpersia/nginx-first-commit-image:v2
+$ sudo docker run -d --name= nginx3 -p 8083:80 carlosofpersia/nginx-first-commit-image:v2
+
+*********************************************************************************
+
+------------------------------------------------------------------------------------
+Aula 11 - Docker PUSH - Subir uma imagem para meu repositorio!
+https://hub.docker.com/
+------------
+
+$ docker logout
+$ docker login
+$ sudo docker images
+
+// Observacao na latest, pois agora ela e a v1 e a v2 seria a latest, pela ordem.
+// carlosofpersia/nginx-first-commit-image:v2 - 6ed5af6133f2 
+// carlosofpersia/nginx-first-commit-image:latest - be4eba73bb36
+
+//criar uma tag da local para a remota
+// $ sudo docker tag 6ed5af6133f2 carlosofpersia/nginx-first-commit-image:v2
+$ sudo docker tag carlosofpersia/nginx-first-commit-image:v2 carlosofpersia/nginx-first-commit-image:v2
+
+// $ docker push {namespace}/mydevrepo
+$ sudo docker push carlosofpersia/nginx-first-commit-image
+
+//verificar no site remoto: https://hub.docker.com/
+
+//testar
+$ sudo docker run --name nginxDownsloadFirstImage -p 8080:80 carlosofpersia/nginx-first-commit-image:v2
+
+
+/*
+ * url para ensinar a fazer login no terminal
+ * https://docs.docker.com/engine/reference/commandline/login/#credentials-store\
+ * problema com login
+ * $ sudo apt install gnupg2 pass 
+ */
+
+
+*********************************************************************************
+
+------------------------------------------------------------------------------------
+Aula 12 - Docker - Trabalhando Com Dockerfile (Foma declarativa)
+https://www.swoole.co.uk/docs/get-started/try-docker
+swoole e um framework php
+https://hub.docker.com/
+------------
+
+	//Crio um arquivo
+$ touch Dockerfile
+	
+	// Altero o arquivo
+$ vim Dockerfile
+
+FROM php:7.3-cli
+
+	//-t e o nome da TAG do docker
+$ sudo docker build -t test_swoole .
+
+	// as imagens serao iguais, pois nao alterou nada 
+$ sudo docker images
+
+	// php                     7.3-cli               68611ff44edc        5 days ago          398MB
+	// test_swoole             latest                68611ff44edc        5 days ago          398MB
+
+
+	//Altero para adicionar mais configuracoes php.
+	// para rodar comandos no DOCKER usamos o RUN.
+	// para rodar comandos no DOCKER php podemos usar o (pecl);
+$ vim Dockerfile
+
+RUN pecl install swoole
+RUN docker-php-ext-enable swoole
+
+	//posso usar o RUN linha a linha ou usar \ && para adicionar mais um comando e pular de linha
+	// instala o swoole com o pecl  e depois a extensao do php docker-php-ext-swoole 
+
+RUN pecl install swoole \
+	&& docker-php-ext-enable swoole
+
+
+	//buildo novamente
+
+$ sudo docker build -t test_swoole .
+
+	// as imagens agora devem ser diverentes, pois criei novas configuracoes no container.
+$ sudo docker images
+
+	// test_swoole             latest                93018f3ba411        About a minute ago   425MB
+	// php                     7.3-cli               68611ff44edc        5 days ago           398MB
+
+$ touch index.php
+$ vim index.php
+	// coloco o que manda colocar no: Example Swoole Applicaiton
+	https://www.swoole.co.uk/docs/get-started/try-docker
+
+	//coloco o comando copy para enviar o index.php local para dentro do docker em /var/www
+$ vim Dockerfile
+
+FROM php:7.3-cli
+
+RUN pecl install swoole \
+	&& docker-php-ext-enable swoole
+
+COPY index.php /var/www/
+
+
+	//Rodo de novo...
+$ sudo docker build -t test_swoole .
+
+
+$ sudo docker images
+
+	// test_swoole             latest                9b7a7722cbc9        5 seconds ago       425MB
+	// php                     7.3-cli               68611ff44edc        5 days ago          398MB
+
+
+	// expor a porta do swoole 9501
+$ vim Dockerfile
+
+FROM php:7.3-cli
+
+RUN pecl install swoole \
+	&& docker-php-ext-enable swoole
+
+COPY index.php /var/www/
+
+EXPOSE 9501
+
+	//Rodar o docker para ser usado na porta 9501
+$ sudo docker run -d --name swoole -p 9501:9501 test_swoole
+
+Ele entrou mas foi direto para os containers parados 
+// nao ve:
+sudo docker ps
+
+// encontra
+sudo docker ps -a
+
+para resolver isso teremos que resolver um cara chamado ENTRYPOINT do Dockerfile para executar o index.php com as configuracoes para segurar o servidor, isso pq o swoole exige.
+
+$ vim Dockerfile
+
+FROM php:7.3-cli
+
+RUN pecl install swoole \
+	&& docker-php-ext-enable swoole
+
+COPY index.php /var/www/
+
+EXPOSE 9501
+
+ENTRYPOINT ["php", "/var/www/index.php", "start"];
+
+	// Rodo novamente, mas apago a primeira imagem que foi gerada
+$ sudo docker rm swoole
+$ sudo docker build -t test_swoole .
+$ sudo docker run -d --name swoole -p 9501:9501 test_swoole
+
+	//testo no browser http://localhost:9501/ e voa-la
+	// agora commitar e fazer o push dessa imagem
+
+$ sudo docker build -t carlosofpersia/php-swoole:latest .
+
+	// carlosofpersia/php-swoole   latest                ca45278f556f        3 minutes ago       425MB
+	// test_swoole                 latest                ca45278f556f        3 minutes ago       425MB
+
+$ sudo docker push carlosofpersia/php-swoole:latest
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 13 - Docker - Instalando Laravel com Dockerfile
+https://hub.docker.com/
+------------
+Dica de como usar laravel - hello world
+https://www.devmedia.com.br/laravel-criando-um-hello-world/40676#
+Em: ~/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto
+$ sudo nano routes/web.php
+---------------------------------------------------------------------
+//instalar laravel no proprio PC - se tiver problemas essas linhas resolvem.
+
+---------------
+$ sudo apt-get install mbstring
+$ sudo apt-get install php-mbstring
+$ sudo apt install php-xml
+$ sudo apt-get install php7.2-mbstring
+$ sudo apt-get install libapache2-mod-php7.2 php7.2-common php7.2-mysql php7.2-curl php7.2-json php7.2-cgi php7.2-gd
+$ composer update
+$ php composer.phar install
+$ composer update --no-scripts
+$ php artisan key:generate
+$ php artisan serve
+$ php artisan migrate -> para rodar o banco do mysql do laravel.
+---------------
+
+// instalo na minha maquina local o laravel do php, que sera definido no volume -v do docker.
+$ sudo apt install composer
+$ composer create-project laravel/laravel projeto
+//dentro do projeto laravel
+$ cd projeto 
+
+$ touch Dockerfile
+$ vi Dockerfile
+
+-------------------------------
+
+FROM php:7.4.9-fpm-alpine3.12
+
+EXPOSE 9000
+
+ENTRYPOINT ["php-fpm"]
+
+-------------------------------
+
+$ sudo docker build -t carlosofpersia/laravel .
+$ sudo docker run -d --name laravel -v $(pwd):/var/www -p 8005:8005 carlosofpersia/laravel
+
+	// testar no browser - http://localhost:9000/
+	// deu pau, pq o laravel usa artisan!
+
+	// Adicionar um bash quando imagem vem pronta (apk add bash)
+$ sudo docker exec -it laravel apk add bash
+
+	// usar o bash
+$ sudo docker exec -it laravel bash
+cd /var/www/
+
+/* rodar o laravel em modo desenvolvimento.
+  php artisan serve --host=0.0.0.0 --port=8000
+  php artisan serve --host=0.0.0.0 --port=8001   
+  php artisan serve --host=0.0.0.0 --port=8002
+  php artisan serve --host=0.0.0.0 --port=8003
+*/
+
+$ php artisan serve --host=0.0.0.0 --port=8005
+
+	// para ver as portas
+$ netstat -tulpn | grep LISTEN
+
+	// Remover todos os dockers
+$ sudo docker rm $(docker ps -aq) -f
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 14 - Docker - Fazendo O Build De Uma Imagem Com Laravel
+https://hub.docker.com/
+------------
+
+A partir da aula passada (13)...
+
+$ vi Dockerfile
+-------------------------------
+
+FROM php:7.4.9-fpm-alpine3.12
+
+WORKDIR /var/www
+RUN rm -rf /var/www/html
+
+COPY . /var/www
+RUN ln -s public html
+
+
+EXPOSE 9000
+ENTRYPOINT ["php-fpm"]
+
+-------------------------------
+
+$ sudo docker rm $(docker -aq) -f
+$ sudo docker build -t carlosofpersia/laravel .
+
+	//-v $(pwd):/var/www -> nao preciso usar volume pq ja subi o laravel na minha imagem.
+$ sudo docker run -d --name laravel -p 8005:8005  carlosofpersia/laravel
+
+	// Adicionar um bash quando imagem vem pronta (apk add bash)
+$ sudo docker exec -it laravel apk add bash
+
+	// usar o bash
+$ sudo docker exec -it laravel bash
+$ ls -> ja estou no diretorio /var/www
+
+$ php artisan serve --host=0.0.0.0 --port=8005
+
+$ sudo docker push carlosofpersia/laravel
+
+E tchan ran!
+https://hub.docker.com/repository/docker/carlosofpersia/laravel
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 15 - Docker - Iniciando Com Docker-Compose
+https://hub.docker.com/
+------------
+
+
+-----------------------
+
+* dentro do diretorio do projeto laravel criar um arquivo oculto e dentro dele o nginx
+
+cd /laravel/projeto/
+
+$ mkdir .docker
+cd /laravel/projeto/.docker/
+$ mkdir nginx
+cd /laravel/projeto/.docker/nginx
+
+--- 1 --------------------------
+
+/laravel/projeto/.docker/nginx
+$ touch Dockerfile
+$ nano Dockerfile
+
+FROM nginx:1.19.2-alpine          
+
+RUN rm /etc/nginx/conf.d/default.conf
+COPY ./nginx.conf /etc/nginx/conf.d
+
+----- 2 --------------------
+
+/laravel/projeto/.docker/nginx
+$ touch nginx.conf
+$ nano nginx.conf
+
+server {
+        listen    80;
+        index     index.php index.html;
+        root      /var/www/public;
+
+        location ~ \.php$ {
+                try_files $uri = 404;
+                fastcgi_split_path_info ^(.+\.php)(/.+);
+                fastcgi_pass            app:9000;
+                fastcgi_index           index.php;
+                include                 fastcgi_params;
+                fastcgi_param           SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_param           PATH_INFO $fastcgi_path_info;
+        }
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+                gzip_static on;
+        }
+}
+
+
+------ 3 -------------------
+
+
+
+em /laravel/projeto/
+
+$ touch docker-compose.yaml
+nano docker-compose.yaml
+
+version: '3'
+
+services:
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+
+----------
+// tty: deixa entrar no bash do docker - linha de comando
+
+------ 4 -------------------
+
+$ docker-compose up
+
+ao rodar ele deu um erro no arquivo /etc/nginx/conf.d/nginx.conf na linha app:9000, 
+pois e um segundo servico, que sera feito agora no passo 5
+** nginx    | 2020/09/03 12:53:31 [emerg] 1#1: 
+
+host not found in upstream "app" in /etc/nginx/conf.d/nginx.conf:10
+
+
+------ 5 -------------------
+
+// adicionar o segundo servico, o redis
+em /laravel/projeto/
+
+nano docker-compose.yaml
+
+version: '3'
+
+services:
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+
+    redis:
+        image: redis:alpine
+        expose:
+        	- 6379
+
+------ 6 -------------------
+
+//
+$ docker-compose up
+
+// vamos rodar em background (daemon) -d
+$ docker-compose up -d
+
+//vai apresentar 2 serivcos
+$ sudo docker ps
+
+//ainda nao se comunicam, pois nao esta configurado a rede.
+
+
+
+------ 7 -------------------
+
+// adicionar o terceiro servico que e o proprio app: 
+em /laravel/projeto/
+
+nano docker-compose.yaml
+
+version: '3'
+
+services:
+
+	app:
+		build: .
+		container_name: app
+		volumes: 
+			- .:/var/www
+
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+
+    redis:
+        image: redis:alpine
+        expose:
+        	- 6379
+
+
+------ 8 -------------------
+
+* em "/laravel/projeto/" libere permissao de escrita do path na maquina local
+
+$ chmod 777 storage/ -R
+$ nano Dockerfile
+
+// add o mysql-client e o pdo ....
+// retirar o "COPY . /var/www" pq vamos trabalhar com volume compartilhado.
+
+FROM php:7.4.9-fpm-alpine3.12
+
+RUN apk add curl
+
+RUN apk add bash mysql-client
+RUN docker-php-ext-install pdo pdo_mysql
+
+WORKDIR /var/www
+RUN rm -rf /var/www/html
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+#RUN composer install && \
+#		cp .env.example .env && \
+#		php artisan key:generate && \
+#		php artisan config:cache
+
+#COPY . /var/www
+RUN ln -s public html
+
+EXPOSE 9000
+ENTRYPOINT ["php-fpm"]
+
+
+------ 9 -------------------
+
+
+sudo docker-compose up --build
+sudo docker-compose up -d
+
+** Atencao
+WARNING: Image for service app was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+
+------ 10 -------------------
+
+* Criar a rede networks para os tres servicos se comunicarem - networks + app-network
+
+$ sudo nano docker-compose.yaml
+
+version: '3'
+
+services:
+
+    app:
+        build: .
+        container_name: app
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+
+------ 11 -------------------
+
+//mato os servicos e subo novamente.
+sudo docker-compose down
+sudo docker-compose up -d
+
+//rodar novamente o Dockerfile
+sudo docker-compose up -d --build
+
+
+
+------ 12 -------------------
+
+
+// redirecionando o laravel para os containers:
+// cd ... c~/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto/
+// isso esta configurado no docker-compose.yaml
+
+sudo nano .env
+
+// em redis:
+REDIS_HOST=127.0.0.1
+// colocar nosso servico redis: 
+REDIS_HOST=redis
+
+// em :
+DB_HOST=127.0.0.1
+// deveremos colocar nosso servico mysql, mas ainda nao foi criado: 
+DB_HOST=db
+
+------ 13 -------------------
+
+// sudo docker-compose exec -it app bash //nao funcionou usar o tradicional
+
+$ sudo docker exec -it app bash
+
+ping redis
+ping nginx
+ping app
+
+//aula 15 terminou, mas ainda faltou instalar o mysql que sera na proxima aula.
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 16 - Docker - Configurando MySQL Com Docker Compose
+https://hub.docker.com
+
+----------- 1 -------------------
+
+// criar o servico de db no docker-compose.yaml - db: images: mysql:8.0
+$ sudo nano docker-compose.yaml
+
+version: '3'
+
+services:
+
+    app:
+        build: .
+        container_name: app
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    db:
+        image: mysql:8.0
+        command: --innodb-use-native-aio=0
+        container_name: db
+        restart: always 
+        tty: true
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_DATABASE=laravel
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+        networks:
+            - app-network
+
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+
+// xxxx
+sudo docker-compose up -d
+sudo docker ps
+
+
+----------- 2 -------------------
+
+
+// redirecionando o laravel para os containers: (parte 12 da aula 15)
+// cd ... c~/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto/
+
+$ sudo nano .env
+
+// em :
+DB_HOST=127.0.0.1
+// deveremos colocar nosso servico mysql, mas ainda nao foi criado: 
+DB_HOST=db
+
+alterar as configuracoes necessarias que foram instaladas no docker-compose.yaml
+DB_PASSWORD=xxx para DB_PASSWORD=root
+
+----------- 3 -------------------
+
+// testar o mysql no container app pelo bash
+$ sudo docker exec -it app bash
+$ php artisan key:generate
+$ php artisan migrate
+
+// pegadinha
+
+//mato os servicos e subo novamente.
+sudo docker-compose down
+sudo docker-compose up -d
+
+//rodar novamente o app para ver se o banco esta ok.
+$ sudo docker exec -it app bash
+$ php artisan key:generate
+$ php artisan migrate
+
+// ou seja, uma vez que matei o container, matou o banco de dados. FUDEU!
+
+----------- 4 -------------------
+
+// para resolver vamos configurar os dados do mysql no volume no docker-compose.yaml.
+
+$ sudo nano docker-compose.yaml
+
+
+version: '3'
+
+services:
+
+    app:
+        build: .
+        container_name: app
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    db:
+        image: mysql:8.0
+        command: --innodb-use-native-aio=0
+        container_name: db
+        restart: always
+        tty: true
+        ports:
+            - "3306:3306"
+        volumes: 
+            - ./.docker/dbdata:/var/lib/mysql
+        environment:
+            - MYSQL_DATABASE=laravel
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+        networks:
+            - app-network
+
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+
+
+----------- 5 -------------------
+
+
+//mato os servicos e subo novamente.
+sudo docker-compose down
+sudo docker-compose up -d
+
+//rodar novamente o app para ver se o banco esta ok.
+$ sudo docker exec -it app bash
+$ php artisan key:generate
+$ php artisan migrate
+
+// vai dar um erro, mas basta rodar novamente. 
+$ sudo docker exec -it app bash
+$ php artisan key:generate
+$ php artisan migrate
+
+// agora rodou ok.
+
+// resto da configuracao esta na errata do mysql abaixo.
+* Errata - Configurando MySQL com Docker Compose
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 17 - Docker - Resolução De Problemas Com Docker-Compose - nao funcionou de primeira ao gerar o migrate do laravel
+https://hub.docker.com
+
+// apagar os dados do mysql para fazer o build do docker-compose so rodar o app depois do db.
+/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto/.docker
+$ sudo rm -rf dbdata/
+
+// cd ... c~/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto/
+$ sudo nano docker-compose.yaml
+
+// uso de depends_on e condition: healthcheck..
+
+version: '3'
+app: 
+	depends_on:
+		- db
+
+--//--
+
+version: '2.3'
+	app: 
+        depends_on:
+            db:
+                condition: service_healthy
+
+	db:
+        healthcheck:
+            test: ["CMD-SHELL", 'mysql -uroot --database=laravel --password=root --execute="SELECT count(table_name) > 0 FROM information$
+            interval: 10s
+            timeout: 10s
+            retries: 4
+
+$ sudo docker-compose down
+$ docker-compose up -d
+$ sudo docker exec -it app bash
+$ php artisan key:generate
+$ php artisan migrate
+
+
+/* Como ficou no final */
+
+-----------------------------------------------------
+
+version: '2.3'
+
+services:
+
+    app:
+        build: .
+        container_name: app
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+        depends_on:
+            db:
+                condition: service_healthy
+
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    db:
+        image: mysql:8.0
+        command: --innodb-use-native-aio=0
+        container_name: db
+        restart: always
+        tty: true
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./.docker/dbdata:/var/lib/mysql
+        environment:
+            - MYSQL_DATABASE=laravel
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+        networks:
+            - app-network
+        healthcheck:
+            test: ["CMD-SHELL", 'mysql -uroot --database=laravel --password=root --execute="SELECT count(table_name) > 0 FROM information$
+            interval: 10s
+            timeout: 10s
+            retries: 4
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+Para finalizar fazer um build da imagem
+* Aula 14
+
+// sobe a imagem
+$ sudo docker build -t carlosofpersia/laravel .
+$ sudo docker push carlosofpersia/laravel
+//testar
+$ sudo docker run --name minhaImagem -p 8080:80 carlosofpersia/laravel
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 18 - Docker - Publicando imagem Laravel -> Exercicio
+https://hub.docker.com
+
+Agora que você já aprendeu muito sobre docker, gostaríamos que dividisse esse exercício em duas etapas:
+
+1) Configurar um ambiente Laravel utilizando o docker-compose com:
+
+Nginx
+PHP-FPM
+Redis
+MySQL
+Lembrando que o volume do código fonte deve ser compartilhado com a App.
+
+Após realizarmos a clonagem do repositório e executarmos: docker-compose up -d, poderemos ver a aplicação Laravel rodando com o erro de autoload na porta: 8000, uma vez que o docker-compose não executou o composer install do PHP, logo, não se preocupe com tal detalhe nesse momento. 
+
+2) Após ter tido sucesso na etapa anterior, faça a configuração do framework Laravel seguindo as etapas (dentro do container):
+
+execute composer install
+crie o arquivo .env baseado no .env.example 
+execute: php artisan key:generate 
+execute: php artisan migrate
+* Nesse momento, quando você acessar a aplicação no browser, finalmente, você deverá ver a página inicial do Laravel funcionando.
+
+Baseado nessas últimas ações, gere o build da imagem desse container e faça a publicação em sua conta no Hub do Docker.
+
+Lembre-se: Ao gerar o build da imagem, TODO o conteúdo incluindo arquivos como vendor, .env, etc deverão ser incluídos.
+
+Adicione o endereço da imagem do seu dockerhub no README.md e faça o commit do projeto contendo todos os arquivos (laravel + docker) para um repositório público do Github.
+
+Arquivos e códigos úteis para auxiliar no exercício incluindo nginx.conf e linha de comando para baixar o composer. Clique aqui (https://gist.github.com/wesleywillians/62c3846f789c02729b856606ae0b7feb).
+
+
+
+// download-composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+// nginx.conf
+server {
+    listen 80;
+    index index.php index.html;
+    root /var/www/public;
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass app:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+        gzip_static on;
+    }
+}
+
+
+* link do push *
+https://hub.docker.com/repository/docker/carlosofpersia/laravel
+https://github.com/carlosofpersia/fullcycle-projetos-docker/tree/feature/projeto-basico
+
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 19 - Docker - Dependências entre containers
+https://hub.docker.com
+
+* Correcao da forma da versao 2.3 para a versao 3 que e a mais nova.
+- depends_on - agora so garante a ordem de criacao de cada servico.
+- dockerize - para aguardar a instalacao dos servicos dependentes.
+- entrypoint para rodar as configuracoes em tempo de subida dos servicos
+
+------------------------------------------------------------------
+
+//Aula 19.1 - Altero o docker-compose
+$ sudo nano docker-compose.yaml
+
+* Configuracao final abaixo na Aula 19.4
+
+------------------------------------------------------------------
+
+//Aula 19.2 - Altero o Dockerfile
+Para resolver esse problema vamos aguardar o mysql ser instalado corretamente por meio do dockerize
+* For Alpine Images: https://github.com/jwilder/dockerize
+
+Instalar o dockerize no Dockerfile
+// Altero o arquivo
+$ sudo vim Dockerfile
+
+/*
+ * Dockerfile
+
+FROM php:7.4.9-fpm-alpine3.12
+
+RUN apk add curl
+
+RUN apk add --no-cache openssl bash mysql-client
+RUN docker-php-ext-install pdo pdo_mysql
+
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+WORKDIR /var/www
+RUN rm -rf /var/www/html
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+#RUN composer install && \
+#                php artisan key:generate && \
+#                php artisan config:cache && \
+#                php artisan migrate && \
+
+
+#COPY . /var/www
+RUN ln -s public html
+
+EXPOSE 9000
+ENTRYPOINT ["php-fpm"]
+
+
+
+*/
+
+------------------------------------------------------------------
+
+//Aula 19.3 - Executo para testar o dockerize.
+
+$ sudo docker-compose down
+$ sudo docker-compose up -d --build
+$ sudo docker exec -it app bash
+$ dockerize -wait tcp://db:3306 -timeout 20s
+
+------------------------------------------------------------------
+
+//Aula 19.4 - * ENTRYPOINT * - Fazer funcionar essas configuracoes direto na ligacao do docker. 
+* Este entrypoint e o mesmo do Dockerfile - cuidado.
+entrypoint: dockerize -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
+
+sudo nano docker-compose.yaml
+
+/*
+ * docker-compose.yaml
+
+version: '3'
+
+services:
+
+    app:
+        build: .
+        container_name: app
+        entrypoint: dockerize -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+        depends_on:
+            - db
+            - redis
+
+    nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+        depends_on:
+            - app
+
+    db:
+        image: mysql:8.0
+        command: --innodb-use-native-aio=0
+        container_name: db
+        restart: always
+        tty: true
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./.docker/dbdata:/var/lib/mysql
+        environment:
+            - MYSQL_DATABASE=laravel
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+        networks:
+            - app-network
+
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+*/
+
+
+
+----------------------------------------------------------
+
+//Aula 19.5 - Criar um script para rodar essas configuracoes.
+
+Em: /Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto
+$ sudo touch .docker/entrypoint.sh
+$ sudo chmod +x .docker/entrypoint.sh
+$ sudo nano .docker/entrypoint.sh
+
+/* 
+ * entrypoint.sh
+
+#!/bin/bash
+
+#php artisan key:generate
+php artisan migrate
+php-fpm
+
+
+*/
+
+Agora nao sera mais necessario rodar os scripts depois que terminar de rodar os servicos manualmente, ja estao na ordem da listagem em tempo de execucao.
+/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto/.docker/entrypoint.sh
+
+
+
+
+----------------------------------------------------------
+
+//Aula 19.6 - Executo as alteracoes.
+sudo rm -rf .docker/dbdata/
+
+$ sudo docker-compose down
+$ sudo docker-compose up -d
+$ sudo docker logs app
+
+// so para testar mesmo e ver que ja foi feito.
+$ sudo docker exec -it app bash
+$ php artisan migrate
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 20 - Docker - Trabalhando com templates
+https://hub.docker.com
+
+
+
+Alternar as variaveis de dev, homol, producao atraves de templates com ajuda do dockerize
+
+/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto/
+* copiar o arquivo .env para .docker/app/.env
+
+$ sudo mkdir .docker/app
+$ sudo cp .env .docker/app/
+$ ls -la .docker/app/
+
+1.-------------------------------------
+
+$ sudo nano .docker/app/.env
+
+Alterar as conexoes do mysql por exemplo:
+
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=root
+
+PARA: {{ .Env.XXXX }}
+
+DB_CONNECTION=mysql
+DB_HOST={{ .Env.DB_HOST }}
+DB_PORT=3306
+DB_DATABASE={{ .Env.DB_DATABASE }}
+DB_USERNAME={{ .Env.DB_USERNAME }}
+DB_PASSWORD={{ .Env.DB_PASSWORD }}
+
+2.-------------------------------------
+
+* Dentro do docker-compose.yaml:
+
+app - entrypoint (-template ./.docker/app/.env:.env)
+app - enviroment (DB_HOST=db....)
+
+$ sudo nano docker-compose.yaml
+
+app:
+container_name: app
+entrypoint: dockerize -template ./.docker/app/.env:.env -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
+environment:
+    - DB_HOST=db
+    - DB_DATABASE=laravel
+    - DB_USERNAME=root
+    - DB_PASSWORD=root
+volumes:....
+
+3.-- Testar -----------------------------------
+
+$ sudo rm -rf .env
+
+$ sudo docker-compose down
+$ sudo docker-compose up -d
+OK.
+
+4.-- Problema da instalacao do zero---------------------------------
+
+$ sudo docker-compose down
+$ sudo rm -rf .env
+$ sudo rm -rf .docker/dbdata
+$ sudo docker-compose up -d
+$ sudo docker logs app
+
+-- PAM!--
+
+
+4.-- Resolvendo da instalacao do zero baixando o vendor.-----------------------------
+
+* No nosso .docker/entrypoint: 
+
+
+$ sudo nano .docker/entrypoint.sh
+
+	#!/bin/bash
+
+	composer install
+
+	php artisan key:generate
+
+	php artisan migrate
+	php-fpm
+
+------- // ------------
+
+$ sudo docker-compose down
+$ sudo docker-compose up -d
+$ sudo docker logs app
+
+
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 21 - Docker - Otimizando Imagens
+https://hub.docker.com
+
+* Reduzir as imagens o maximo possivel para enviar ao dockerhub
+
+/home/carloss/Documents/Desenvolvimento/fullcycle-projetos-docker/laravel/projeto
+
+$ sudo docker rm $(sudo docker ps -a -q) -f
+
+$ sudo nano Dockerfile
+* add apk nodejs e npm 
+
+RUN apk add --no-cache openssl bash mysql-client nodejs npm
+
+
+$ sudo docker-compose up -d --build
+$ sudo docker exec -it app bash
+
+
+* Para resumir o assunto, quando instalo o npm, eu nao preciso enviar para producao o diretorio node_modules...
+
+
+* Solucao:
+
+Duplico os Dockerfile e faco um alias do Dockerfile usar o Dockerfile em tempo de execucao, mas so levar para producao o que e realmente necessario estar na imagem.
+
+$ cp ./Dockerfile ./Dockerfile.prod
+
+-------------------------------------------
+
+FROM php:7.4.9-fpm-alpine3.12 as build
+
+RUN apk add curl
+
+RUN apk add --no-cache openssl bash mysql-client nodejs npm
+RUN docker-php-ext-install pdo pdo_mysql
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+WORKDIR /var/www
+RUN rm -rf /var/www/html
+
+RUN ln -s public html
+
+COPY . /var/www
+
+RUN composer install \
+                && php artisan key:generate \
+                && php artisan cache:clear \
+                && chmod -R 775 storage  
+
+RUN npm install
+
+#aqui o apice para resolver coisas que nao quero levar para producao.
+FROM php:7.4.9-fpm-alpine3.12         
+
+RUN apk add --no-cache mysql-client           
+RUN docker-php-ext-install pdo pdo_mysql
+
+WORKDIR /var/www
+RUN rm -rf /var/www/html
+
+COPY --from=builder /var/www .
+
+EXPOSE 9000
+ENTRYPOINT ["php-fpm"]
+
+-------------------------------------------
+
+// Rodo o Docker de producao
+$ sudo docker build -t carlosofpersia/laravel-optimized -f Dockerfile.prod .
+
+
+$ sudo run --name laravel -d carlosofpersia/laravel-optimized
+
+$ sudo docker run --name laravel -d carlosofpersia/laravel-optimized
+
+$ sudo docker exec -it laravel bash (nao deve existir pq nao subiu o bash)
+$ sudo docker exec -it laravel ls 
+$ sudo docker exec -it laravel apk add bash (instalo o bash)
+$ sudo docker exec -it laravel bash
+$ npm (nao instalou)
+$ composer (nao instalou)
+
+* Entao subi para producao um container sem nada instalado. Isso e so um exemplo. Mas a funcionalidade deu para entender como usar.
+
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+Aula 22 - Docker - Desafio Docker
+https://hub.docker.com
+
+--------------------------------------------
+
+Desafio Docker
+Parabéns! Se você chegou até aqui é porque você está de fato compreendendo os principais conceitos do Docker!
+
+Nesse desafio você terá duas tarefas extremamente importantes:
+
+1) Baseado em nosso projeto exemplo Laravel, utilize o sistema de templates do Dockerize para que ele ajude no processo de deixar o arquivo nginx.conf mais flexível, ou seja, tanto o host e porta da chamada do php-fpm possam ser definidos como variáveis de ambiente no docker-compose.yaml. 
+
+O resultado final é que quando rodemos docker-compose up -d, tanto o host e a porta do nginx possam ser definidas através de variáveis de ambiente no docker-compose.yaml. 
+
+Dica: Esse processo é bem similar ao que vimos no curso com o arquivo .env do Laravel. Colocamos as varáveis de template no arquivo .env para o dockerize e ele fez o processo de substituição. Nesse caso, faça o mesmo processo para o arquivo nginx.conf colocando as variáveis para o host e porta do php-fpm.
+
+2) Esse desafio é muito empolgante principalmente se você nunca trabalhou com a linguagem Go!
+Você terá que publicar uma imagem no docker hub. Quando executarmos:
+
+docker run <seu-user>/codeeducation 
+
+Temos que ter o seguinte resultado: Code.education Rocks!
+
+Se você perceber, essa imagem apenas realiza um print da mensagem como resultado final, logo, vale a pena dar uma conferida no próprio site da Go Lang para aprender como fazer um "olá mundo".
+
+Lembrando que a Go Lang possui imagens oficiais prontas, vale a pena consultar o Docker Hub.
+
+3) A imagem de nosso projeto Go precisa ter menos de 2MB =)
+
+Dica: No vídeo de introdução sobre o Docker quando falamos sobre o sistema de arquivos em camadas, apresento uma imagem "raiz", talvez seja uma boa utilizá-la.
+
+Divirta-se
+
+-----------------------------------------
+Exercicio 1
+
+nginx.conf
+
+sudo cp .docker/nginx/nginx.conf .docker/app/nginx.conf
+
+sudo nano .docker/app/nginx.conf
+Trocar: 
+        listen 80
+para: 
+        listen    {{ .Env.NGINX_HOST_PORTA }};
+
+
+
+sudo rm -rf .docker/nginx/nginx.conf
+
+
+
+
+
+
+
+-----------------------------------------
+Exercicio 2
+
+
+https://medium.com/trainingcenter/construindo-o-seu-ambiente-de-estudos-go-com-docker-60274fc8a2e9
+https://hub.docker.com/_/golang?tab=tags
+https://gobyexample.com/hello-world
+https://hub.docker.com/
+https://medium.com/trainingcenter/golang-e-docker-d2d9dedd82c0
+https://github.com/callicoder/go-docker-compose/blob/master/docker-compose.yml
+https://golang.org/doc/install?download=go1.15.2.linux-amd64.tar.gz
+https://stackoverflow.com/questions/50707946/docker-for-golang-application
+https://github.com/callicoder/go-docker/blob/master/Dockerfile
+https://stackoverflow.com/questions/10838469/how-to-compile-go-program-consisting-of-multiple-files
+https://github.com/callicoder/go-docker-compose/blob/master/Dockerfile
+
+Aula 11 para enviar o push para o docker hub.
+
+https://portal.code.education/lms/#/172/155/94/conteudos?projeto=45&fase=210
+
+
+sudo /etc/init.d/apache2 stop
+
+sudo docker rm $(sudo docker ps -a -q) -f
+sudo docker rmi $(sudo docker images -q) -f
+
+	// Adicionar um bash quando imagem vem pronta (apk add bash)
+$ sudo docker exec -it laravel apk add bash
+
+	// usar o bash
+$ sudo docker exec -it laravel bash
+cd /var/www/
+
+
+/************************************/
+nginx.conf
+
+sudo cp .docker/nginx/nginx.conf .docker/app/nginx.conf
+
+sudo nano .docker/app/nginx.conf
+Trocar: 
+        listen 80
+para: 
+        listen    {{ .Env.NGINX_HOST_PORTA }};
+
+
+
+sudo rm -rf .docker/nginx/nginx.conf
+
+sudo docker rm $(sudo docker ps -a -q) -f
+ls
+/************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+
+Errata - Instalação do Docker no Windows
+Oi pessoal, tudo bem?
+
+No vídeo anterior eu falei que no Windows existem duas versões de Docker a serem instaladas para que possamos começar nosso módulo de Devops:
+
+Docker Toolbox
+Docker Desktop usando Hyper-V
+Porém, em maio de 2020, a Microsoft anunciou o WSL 2 (Windows Subsystem Linux) que permite rodar Linux no Windows de forma leve e rápida, então agora temos um outro panorama para utilizar Docker no Windows.
+
+Preparamos um guia para orientá-lo a configurar o Docker com WSL2: https://github.com/codeedu/wsl2-docker-quickstart. 
+
+Todas as informações estão neste guia, você deve usar este ambiente no Windows a partir daqui.
+
+É isso aí pessoal, até a próxima!
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+
+
+Errata - Padronização do Dockerfile p...
+
+Errata - Padronização do Dockerfile para todos sistemas operacionais
+Oi pessoal, tudo bem?
+
+Como não especificamos nenhum usuário a ser utilizado por padrão na imagem criada através de php:7.3.6-fpm-alpine3.9, o usuário root será o padrão a ser utilizado.
+
+Trabalhando-se desta forma, se de dentro da execução do Docker criamos um arquivo no projeto, exemplificando um controller com Laravel com o comando php artisan make:controller ClienteController, este arquivo pertencerá ao usuário root.
+
+Qualquer arquivo gerado de dentro da execução pertencerá ao usuário root e o problema disto é que ao abrir o arquivo na sua IDE para edição, ao salvar, a IDE mostrará um erro de "Permission Denied", pois a IDE está com permissão de escrever nos arquivos que são do seu usuário da sua máquina (você não está rodando a IDE com o usuário root).
+
+Portanto, vamos organizar o Dockerfile de desenvolvimento (podemos ter outro Dockerfile específico para produção, vamos ver isto mais a frente no curso):
+
+FROM php:7.3.6-fpm-alpine3.9
+
+RUN apk add --no-cache shadow
+
+WORKDIR /var/www
+RUN rm -rf /var/www/html 
+
+COPY . /var/www
+RUN chown -R www-data:www-data /var/www
+
+RUN ln -s public html
+
+RUN usermod -u 1000 www-data
+USER www-data
+
+EXPOSE 9000
+
+ENTRYPOINT ["php-fpm"]
+Esta configuração é praticamente idêntica a que foi feita na última aula, com 3 diferenças (linhas que estão em negrito):
+
+RUN apk add --no-cache shadow
+A instalação do pacote shadow para habilitar o comando usermod
+RUN chown -R www-data:www-data /var/www
+           Atribuir a arquivos e pastas que a propriedade é do usuário www-data, como foi feito um COPY antes com o root, os arquivos                  são dele e o www-data não teria permissão para escrever e modificar arquivos.
+
+RUN usermod -u 1000 www-data
+Atribuição do grupo 1000 ao usuário www-data
+USER www-data
+Atribuição do usuário www-data como usuário padrão em vez do root
+O usuário www-data já vem nesta imagem do PHP, então temos podemos usa-lo e atribuir a ele o grupo de permissões 1000 para que este usuário represente o usuário padrão da nossa máquina, ou seja, de agora em diante tudo que for criado com www-data pertencerá ao usuário da sua máquina, resolvendo futuros problemas de "Permission Denied".
+
+ 
+
+Dicas sobre execução de comandos no Docker
+
+Agora que o usuário padrão será www-data, se tentarmos executar um comando do tipo:  docker exec -it container_name apk add bash, não funcionará pois para fazer um "apk add" devemos ter permissão de root no container, logo todos comandos a serem executados no container que precisam de permissão do root precisam especificar que o usuário é o root, exemplo:
+
+docker exec -u root -it container_name apk add bash
+
+ 
+
+Vamos manter este Dockerfile padrão para todos utilizarem durante este módulo, ok?
+
+É isso aí pessoal, até mais
+
+
+
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+
+
+
+Errata - Configurando MySQL com Docker Compose
+Oi pessoal, tudo bem?
+
+Ao trabalhar com MySQL temos o mesmo problema falado na aula Errata - Padronização do Dockerfile para todos sistemas operacionais.
+
+Este problema acontece no volume que é criado no projeto em .docker/dbdata. O volume é criado com grupo de permissões divergente do que o usuário da nossa máquina tem acesso e pode acontecer alguns problemas ao tentar fazer build novamente com o Docker, ele pode alegar que não tem permissão para manipular esta pasta depois de um build, por exemplo.
+
+A estratégia para resolver isto é usar mais uma vez o comando usermod.
+
+Vamos criar um Dockerfile para organizar o MySQL, crie nesta estrutura de pastas:
+
+- .docker
+
+   - mysql
+
+      - Dockerfile
+
+FROM mysql:5.7
+
+RUN usermod -u 1000 mysql
+No seu docker-compose.yml mude a propriedade build do serviço db:
+
+db:
+
+   build: .docker/mysql
+Neste caso, veja que especificamos qual é a imagem mysql:5.7 (que já vem com o comando usermod) e atribuímos o grupo 1000 ao usuário já existente na imagem que é o mysql (este usuário é da imagem, não do banco de dados), desta forma reparamos as permissões e a dbdata percentecerá ao nosso usuário também.
+
+Vamos manter este Dockerfile padrão para todos utilizarem durante este módulo, ok?
+
+É isso aí pessoal, até mais!
+
+
+
+----------------------------------------------
+
+
+
+
+Container MYSQL - usa o volume direto na linha (-v "$PWD/data":/var/lib/mysql) para salvar os dados no meu local.
+
+https://hub.docker.com/_/mysql
+
+$ mkdir data
+$ ls -lnd data
+drwxr-xr-x 2 1000 1000 4096 Aug 27 15:54 data
+
+$ sudo docker run -v "$PWD/data":/var/lib/mysql --user 1000:1000 --name sponsorme-mysql -e MYSQL_ROOT_PASSWORD=skater -d mysql:8.0
+
+docker logs sponsorme-mysql 2>&1 | grep GENERATED
+
+//acessar o mysql pelo terminal
+sudo docker exec -it sponsorme-mysql bash
+sudo docker exec -it sponsorme-mysql mysql -uroot -p
+
+//pegar o ip da docker
+sudo docker network inspect bridge
+usuario root password skater na local.
+
+/**************************//**************************//**************************/
+
+
+*********************************************************************************
+------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+***********************************************************************************
+
+comando muito importante para entrar no modo terminal do Docker (linha de comando):
+* sudo docker exec -it nome_do_container_ou_id bash
+
+$ mkdir data
+$ ls -lnd data
+drwxr-xr-x 2 1000 1000 4096 Aug 27 15:54 data
+$ docker run -v "$PWD/data":/var/lib/mysql --user 1000:1000 --name sponsor-mysql -e MYSQL_ROOT_PASSWORD=skater -d mysql:5.7 (nao funciona para o sistema sponsor-me)
+
+
+
+
+
 
 
