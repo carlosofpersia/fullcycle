@@ -1,0 +1,81 @@
+
+https://github.com/codeedu/jornada-microservicos
+
+
+Aula 1 - prática - docker + laravel
+
+1. ENTRYPOINT [ "php-fpm" ] -> Segura o docker em pé, senão ele roda tudo e morre.
+
+
+  productapp:
+    #procura para construir o Dockerfile no mesmo diretório deste arquivo
+    build: .
+    # ./ -> disco local, : -> para, /var/www -> local do arquivo no container docker
+    # volumes -> nao perco informacao pq esta na minha maquina local
+    volumes:
+      - ./:/var/www
+
+$ cd customer-service
+
+$ docker-compose up -d
+
+$ docker ps
+
+// entro no terminal do container docker -> tem que ser o nome que esta no docker-compose
+$ sudo docker-compose exec productapp bash
+
+$ ls 
+$ pwd // veremos que estamos no diretório /var/www que foi definido na linha do Dockerfile
+$ composer 
+$ exit
+
+2. instalar docker mysql no docker-compose.yml
+
+$ sudo docker-compose up -d
+$ sudo docker-compose ps
+
+3. ligo o Redis
+$ sudo docker-compose up -d
+$ sudo docker-compose ps
+
+# Redis é um armazenamento de estrutura de dados em memória, usado como um banco de dados em memória distribuído de chave-valor, cache e agente de mensagens, com durabilidade opcional. Wikipédia
+
+
+https://laravel.com/docs/6.x#installing-laravel
+
+composer create-project --prefer-dist laravel/laravel blog "6.*"
+
+move os arquivos para /var/www -> inclusive os escondigos
+mv * ../
+
+testa:
+
+http://localhost:8001/
+
+----------------------------------------------------------------
+
+alterar o arquivo .env para o mysql de acordo com o docker-compose
+
+DB_HOST=127.0.0.1 -> productapp-mysql
+DB_DATABASE=laravel -> productapp
+DB_PASSWORD=root
+
+alterar o arquivo .env para o redis de acordo com o docker-compose
+
+REDIS_HOST=127.0.0.1 -> productapp-redis
+
+
+----------------------------------------------------------------
+
+em /var/www rodar:
+$ php artisan migrate
+
+
+
+----------------------------------------------------------------
+***************************************************************
+Aula 2 - 
+
+
+
+

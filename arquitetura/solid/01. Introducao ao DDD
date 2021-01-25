@@ -1,0 +1,189 @@
+
+
+*** DDD
+
+O que e DDD
+
+E um conjunto de principios com foco em:
+	1. Dominio;
+	2. Exploracao de modelos de forma criativa;
+	3. Definir e falar a linguagem Ubiqua baseada em um contexto delimitado.
+
+1. Dominio;
+	E o coracao do negocio que vc esta trabalhando. E baseado em um conjunto de ideias, conhecimento e processos de negocio.
+
+2. Exploracao de modelos de forma criativa;
+	DDD preza que desenvolvedores facam parte do processo de entender o negocio e todos os seus modelos nos mais diversos angulos ao inves de simplesmente entrevistar especialistas.
+
+3. Definir e falar a linguagem Ubiqua baseada em um contexto delimitado.
+Linguagem Ubiqua e a linguagem falada no dia a dia no contexto da empresa. E a linguagem que utiliza as terminologias da realidade do negocio.
+	Conhecer os jargoes para comunicacao, ex: jarradinha, jarradao.
+
+
+* DDD + Microservicos fazem muito sentido nos dias de hoje;
+	Eric Evans - 2003 (Livro azul, Domain-Driven-Design - Atacando as complexidades no coracao do software);
+	Utilizado para Aplicacoes complexas;
+	Facil de entender;
+	Dificil de aplicar;
+	Utilizacao de diversos padroes de projetos;
+
+
+* 3 Pilares do DDD (Proposito, sem codigo ainda)
+
+	1. Linguagem Ubiqua;
+	2. Bounded Contexts;
+		Contextos Delimitados, ate onde vai a responsabilidade de cada parte do sistema.
+	3. Context Maps;
+		Uma vez os contextos delimitados, criar um mapa de relacao dos contextos.
+
+
+
+* Linguagem Ubiqua
+
+	1. A comunicacao da Linguagem Ubiqua deve ser ;
+		DEVS <-> Linguagem Ubiqua <-> Experts no negocio;
+
+	2. Linguagem Ubiqua - Exemplo de Glossario:
+		se o negocio e um NetFlix -> stream de filmes, quais os jargoes que devo entender:
+			Playback - Processo de execucao de um video;
+			Video - Conteudo que sera visto pelo usuario;
+			Capa - Figura descritiva de um video;
+			Perfil - Perfil gerado pelo usuario para separar os utilizadores e susas preferencias e 'Minha Lista';
+			Minha Lista - Lista de Videos usada pelo usuario armazenar os videos que tem interesse em ver depois;
+			Titulo - Nome do video;
+			Pessoas - Personagens que fazem participacao em um determinado video;
+			Genero - Estili que define o tipo de um video. Ex: Drama, Terror, Comedia;
+			Catalogo - Catalogo de videos  disponibilizados.
+
+
+* Bounded Contexts
+
+	Delimita os contextos da aplicacao;
+	Cada contexto possui suas responsabilidades claramentes definidas;
+	Cada contexto pode ter sua propria linguagem Ubiqua;
+	Utilizacao de historias e levantamento do escopo do projeto com o 'domain expert' auxilia no processo de delimitacao de contextos;
+
+	Bounded Contexts - Exemplo de Historia
+
+		Cria uma conta para acessar o sistema;
+		Faz o login;
+		Seleciona o plano de acesso e realiza a assinatura;
+		Cria um perfil de acesso;
+		Navega no catalogo de videos;
+		Realiza uma busca atraves do titulo e/ou genero;
+		Adiciona os videos que tem interesse em sua lista;
+		Acessa o video escolhido e faz o playback.
+
+	Modelagem estrategica
+
+		1.Catalogo;
+		2.Assinatura;
+		1.Video (Dominio Principal);
+		2.Pagamento (Dominio Generico);
+		2.Perfil;
+		3.Autenticacao (Dominio Auxiliar);
+		2.Minha Lista;
+
+
+* Context Map
+
+	Crio um mapa do Bounded Context para facilitar a visualizacao dos propositos:
+	Cada contexto e uma equipe;
+
+	Direcoes -> Upstream(U - o cara que manda) e Downstream(D)
+	UD = cliente servidor;
+	DU = conformismo;
+	Nucleo compartilhado
+	Camada Anti-corrupcao
+
+
+
+(Perfil (D) - cliente fornecedor - (U) Catalogo (U) - cliente fornecedor (D) Minha Lista) Nucleo Compartilhado - Video;
+Catalogo + Video = Parceiros;
+
+Catalogo (U) - cliente fornecedor - (A) Assinatura;
+
+Assinatura (D) - conformismo -  (U) Pagamento ((+Camada Anti-corrupcao));
+
+(Catalogo|Assinatura|Video|Pagamento|Perfil|Minha Lista) - Nucleo compartilhado - Autenticacao ((+Camada Anti-corrupcao));
+
+
+DDD trata-se de relacionamento;
+
+
+------
+
+Domain Model Patterns (a parte programatica)
+
+
+	Sao padroes de desenvolviemento e estruturacao de aplicacoes cujo dominio e o principal foco
+	1. Focados em Entidades de Agregadores
+	2. Objetos de Valor
+	3. Repositorios
+	4. Servicos de Dominio
+
+
+1. Focados em Entidades de Agregadores
+
+	Objetos Agregados
+
+		Entidade
+			Pagamento
+			Root
+		Entidade 
+			Transacao
+
+2. Objetos de valor (Values Objects)
+
+	Imutaveis;
+	Colecao de atributos;
+	Normalmente nao possuem metodo setters;
+	Entrada dos valores por um construtor;
+	Tipagem forte ao inves da utilizacao de dados primitivos;
+
+	Ex:
+		String endereco = Rua Jose da Silva, 82, centro, Sao Paulo;
+		Enderedco endereco = construtor ("Rua Jose da Silva", 82, "centro", "Sao Paulo");
+
+3. Repositorios
+
+	Tem acesso direto a camada de dados;
+	Persiste dados utilizando as entidades;
+	Possui os metodos necessarios para realizar consultas;
+	Utilize sempre um repositorio por agregacao; (1 repositorio por a gregacao [pedido = pedidoItem, pedidoTransacao, pedido, pedidoLista...]);
+	Pode consultar diretamente servicoes externos.
+
+4. Servicos de Dominio
+	
+	Implementam logica de negocios a partir da definicao de um expert de dominio;
+	Trabalham com diversos fluxos de diversas entidades e agregacoes;
+	Utilizam os repositorios como interface de acesso aos dados;
+	Consumem recursos da camada de infraestrutura como enviar email, disparar eventos, entre outros.
+	
+********************************
+
+
+
+DDD: Domain Driven Design
+
+http://www.agileandart.com/2010/07/16/ddd-introducao-a-domain-driven-design/
+https://medium.com/@julio.falbo/minha-vis%C3%A3o-de-desenvolvedor-sobre-domain-driven-design-ddd-841afbe2fbc7
+https://medium.com/cwi-software/domain-driven-design-do-in%C3%ADcio-ao-c%C3%B3digo-569b23cb3d47
+
+* Alinhamento do código com o negócio: o contato dos desenvolvedores com os especialistas do domínio é algo essencial quando se faz DDD (o pessoal de métodos ágeis já sabe disso faz tempo);
+
+* Favorecer reutilização: os blocos de construção, que veremos adiante, facilitam aproveitar um mesmo conceito de domínio ou um mesmo código em vários lugares;
+
+
+* Mínimo de acoplamento: Com um modelo bem feito, organizado, as várias partes de um sistema interagem sem que haja muita dependência entre módulos ou classes de objetos de conceitos distintos;
+
+* Independência da Tecnologia: DDD não foca em tecnologia, mas sim em entender as regras de negócio e como elas devem estar refletidas no código e no modelo de domínio. Não que a tecnologia usada não seja importante, mas essa não é uma preocupação de DDD.
+
+
+
+https://www.linkedin.com/pulse/sobre-m%C3%A1gicas-e-projetos-andr%C3%A9-henrique-de-siqueira/
+
+
+
+
+
